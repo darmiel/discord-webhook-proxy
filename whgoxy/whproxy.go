@@ -2,14 +2,16 @@ package whgoxy
 
 import "log"
 
-var opt *Options
+var Opt *Options
 
 func New(options *Options) {
-	opt = options
+	Opt = options
 
-	// Init database
-	if err := InitDatabase(opt.DatabaseFile); err != nil {
-		log.Fatalln("Error received:", err.Error())
+	if options.MongoUse {
+		InitMongoDatabase(options)
+	} else {
+		// No database selected
+		log.Fatalln("Error: No database selected.")
 		return
 	}
 }
