@@ -1,14 +1,16 @@
 package whgoxy
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
-	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"log"
+	"net/http"
 	"strings"
 	"time"
 )
@@ -19,7 +21,24 @@ type SavedWebhook struct {
 	Data       bson.M `json:"data"`
 }
 
+var errorEmptyWebhookUrl error = errors.New("empty webhook url")
+
+func (w *SavedWebhook) CheckValidity() (err error) {
+	if len(w.WebhookUrl) <= 0 {
+		return errorEmptyWebhookUrl
+	}
+
+	// TODO: Add more validity checks (discord format etc.)
+
+	return nil
+}
+
 func (w *SavedWebhook) Send(param ...map[string]string) (err error) {
+	// check if webhook is valid
+	if err := w.CheckValidity(); err != nil {
+		return err
+	}
+
 	// marshall data
 	jsdb, err := json.Marshal(w.Data)
 	if err != nil {
@@ -44,9 +63,27 @@ func (w *SavedWebhook) Send(param ...map[string]string) (err error) {
 	}
 
 	// TODO: Debug. Remove me!
-	log.Println("Json:", jsd)
+	log.Println("Sending json to discord:", jsd)
 
-	// TODO: Send to discord
+	// Send to discord
+	reader := bytes.NewReader([]byte(jsd))
+	req, err := http.NewRequest("POST", w.WebhookUrl, reader)
+	if err != nil {
+		return err
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+
+	// make request
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return err
+	}
+
+	defer func() {
+		_ = resp.Body.Close()
+	}()
 
 	return nil
 }
@@ -111,31 +148,4 @@ func InitMongoDatabase(opt *Options) {
 			log.Fatalln("Error while disconnecting:", err.Error())
 		}
 	}()
-
-	// Test
-	webhook := &SavedWebhook{
-		UUID:       uuid.New().String(),
-		WebhookUrl: "https://ptb.discord.com/webhook/abc",
-		Data: bson.M{
-			"content": "@everyone Das ist ein Test: {{ param_test }}",
-			"embeds": []bson.M{
-				{
-					"author": bson.M{
-						"name":       "Daniel",
-						"avatar_url": "abc",
-					},
-				},
-			},
-		},
-	}
-	if err := webhook.Save(ctx, client); err != nil {
-		log.Println("Error:", err.Error())
-	} else {
-		if err := webhook.Send(map[string]string{
-			"param_test": "Ja genau, ein Test!",
-		}); err != nil {
-			log.Fatalln("Error:", err.Error())
-			return
-		}
-	}
 }
