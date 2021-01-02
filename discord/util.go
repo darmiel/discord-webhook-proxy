@@ -2,6 +2,7 @@ package discord
 
 import "math/rand"
 
+//goland:noinspection SpellCheckingInspection
 const SecretAvailableChars string = "ABCDEFGHKMNPQRSTUVXYZabcdefghmnpqrstuvwxyz023456789."
 
 // generateSecret generates a 64 long string

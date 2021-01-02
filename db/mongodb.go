@@ -16,13 +16,16 @@ type Database interface {
 	// returns an error if anything went wrong.
 	SaveWebhook(w *discord.SavedWebhook) (err error)
 
-	// FindWebhook searches for a webhook by the given id (object id)
+	// FindWebhook searches for a webhook by the given id (uuid)
 	// returns the webhook if found, otherwise an error if anything went wrong.
 	FindWebhook(uuid string) (w *discord.SavedWebhook, err error)
 
+	// FindWebhook searches for a webhook by the given id (uuid) AND the matching secret
+	// returns the webhook if found, otherwise an error if anything went wrong.
+	FindWebhookWithSecret(uuid string, secret string) (w *discord.SavedWebhook, err error)
+
 	Disconnect() (err error)
 }
-
 type MongoDatabase struct {
 	client   *mongo.Client
 	context  context.Context
@@ -49,18 +52,20 @@ func (mdb *MongoDatabase) FindWebhook(uuid string) (w *discord.SavedWebhook, err
 	filter := bson.M{
 		"uuid": uuid,
 	}
+	w, err = findWebhookWithFilter(mdb, filter)
+	return w, err
+}
 
-	res := mdb.collection().FindOne(mdb.context, filter)
-	if res.Err() != nil {
-		return nil, res.Err()
+// FindWebhookWithSecret ...
+func (mdb *MongoDatabase) FindWebhookWithSecret(uuid string, secret string) (w *discord.SavedWebhook, err error) {
+	filter := bson.M{
+		"$and": []bson.M{
+			{"uuid": uuid},
+			{"secret": secret},
+		},
 	}
-
-	w = &discord.SavedWebhook{}
-	if err = res.Decode(w); err != nil {
-		return nil, err
-	}
-
-	return w, nil
+	w, err = findWebhookWithFilter(mdb, filter)
+	return w, err
 }
 
 func (mdb *MongoDatabase) Disconnect() (err error) {
@@ -76,4 +81,18 @@ func NewMongoDatabase(client *mongo.Client, context context.Context, database st
 		context:  context,
 		database: database,
 	}
+}
+
+func findWebhookWithFilter(mdb *MongoDatabase, filter bson.M) (w *discord.SavedWebhook, err error) {
+	res := mdb.collection().FindOne(mdb.context, filter)
+	if res.Err() != nil {
+		return nil, res.Err()
+	}
+
+	w = &discord.SavedWebhook{}
+	if err = res.Decode(w); err != nil {
+		return nil, err
+	}
+
+	return w, nil
 }
