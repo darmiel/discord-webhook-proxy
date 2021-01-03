@@ -37,11 +37,11 @@ func NewWebhook(webhookURL string, data *WebhookData) (w *SavedWebhook) {
 
 // Send sends the webhook directly to discord without any further validation checks
 // so be sure to check the SavedWebhook before calling Send
-func (w *SavedWebhook) Send(param ...map[string]string) (err error) {
+func (w *SavedWebhook) Send(param ...map[string]string) (sentJson string, err error) {
 	// marshal data
 	jsdb, err := json.Marshal(w.Data)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	jsd := string(jsdb)
@@ -65,7 +65,7 @@ func (w *SavedWebhook) Send(param ...map[string]string) (err error) {
 	reader := bytes.NewReader([]byte(jsd))
 	req, err := http.NewRequest("POST", w.WebhookURL, reader)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	req.Header.Set("Content-Type", "application/json")
@@ -74,17 +74,17 @@ func (w *SavedWebhook) Send(param ...map[string]string) (err error) {
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	s := math.Floor(float64(resp.StatusCode) / 100)
 	if s != float64(2) {
-		return errors.New("status was not 2xx but " + strconv.Itoa(resp.StatusCode))
+		return "", errors.New("status was not 2xx but " + strconv.Itoa(resp.StatusCode))
 	}
 
 	defer func() {
 		_ = resp.Body.Close()
 	}()
 
-	return nil
+	return jsd, nil
 }

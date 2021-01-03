@@ -43,7 +43,7 @@ func (w *SavedWebhook) CheckValidity(sendTest bool) (err error) {
 
 	// make a test call to discord
 	if sendTest {
-		if err := w.Send(map[string]string{}); err != nil {
+		if _, err := w.Send(map[string]string{}); err != nil {
 			return err
 		}
 	}

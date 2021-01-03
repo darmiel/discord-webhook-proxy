@@ -6,6 +6,7 @@ import (
 	"github.com/gorilla/mux"
 	"log"
 	"net/http"
+	"strings"
 )
 
 func New(db db.Database) (res *mux.Router) {
@@ -34,18 +35,23 @@ func New(db db.Database) (res *mux.Router) {
 		// build params
 		params := make(map[string]string)
 		query := r.URL.Query()
-		for k, _ := range query {
-			params[k] = query.Get(k)
-			log.Println("[Debug] Param", k, "=", query.Get(k))
+		for k, v := range query {
+			if strings.HasSuffix(k, "[]") {
+				k = k[:len(k)-2]
+			}
+
+			params[k] = strings.Join(v, ",")
+			log.Println("[Debug] Param", k, "=", params[k])
 		}
 
 		// send webhook
-		if err := webhook.Send(params); err != nil {
+		sentJson, err := webhook.Send(params)
+		if err != nil {
 			_, _ = fmt.Fprintf(w, "Error (Discord): %s", err.Error())
 			return
 		}
 
-		_, _ = fmt.Fprintf(w, "Success")
+		_, _ = fmt.Fprintf(w, "Success: %s", sentJson)
 	})
 
 	return router
