@@ -2,7 +2,9 @@ package whgoxy
 
 import (
 	"github.com/darmiel/whgoxy/db"
+	"github.com/darmiel/whgoxy/router"
 	"log"
+	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
@@ -28,7 +30,16 @@ func New(options *Options) {
 		return
 	}
 
-	log.Println("whgoxy is now running. Press CTRL-C to exit gracefully.")
+	log.Println("✅  whgoxy is now (hopefully) running on " + options.ApiBind)
+	log.Println("Press CTRL-C to exit gracefully.")
+
+	// Start http
+	r := router.New(database)
+	if err := http.ListenAndServe(options.ApiBind, r); err != nil {
+		log.Fatalln("Error listening and serving:", err.Error())
+		return
+	}
+
 	sc := make(chan os.Signal, 1)
 	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt, os.Kill)
 	<-sc

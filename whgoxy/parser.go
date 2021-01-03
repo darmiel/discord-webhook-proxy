@@ -11,6 +11,9 @@ type Options struct {
 	MongoHost     string `json:"mongo_host"`
 	MongoAuthUser string `json:"mongo_auth_user"`
 	MongoAuthPass string `json:"mongo_auth_pass"`
+
+	// Http
+	ApiBind string `json:"api_bind"`
 }
 
 func Parse() (opt *Options, err error) {
@@ -25,6 +28,9 @@ func Parse() (opt *Options, err error) {
 	flag.StringVar(&opt.MongoHost, "mongo-host", "whgoxy.x10rd.mongodb.net", "MongoDB Host")
 	flag.StringVar(&opt.MongoAuthUser, "mongo-user", "whgoxy", "MongoDB Auth User")
 	flag.StringVar(&opt.MongoAuthPass, "mongo-pass", "", "MongoDB Auth Password")
+
+	// Http
+	flag.StringVar(&opt.ApiBind, "b", ":8060", "Bind address")
 	// flags here /\
 
 	flag.Parse()
