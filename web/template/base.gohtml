@@ -1,0 +1,20 @@
+{{ define "base" }}
+    <!DOCTYPE html>
+    <html lang="en">
+
+    <!-- Start Head -->
+    <!--suppress HtmlRequiredTitleElement -->
+    <head>
+        {{ template "head" }}
+    </head>
+    <!-- End Head -->
+
+    <!-- Start Body -->
+    <body>
+    {{ template "navbar" . }}
+    {{ template "content" . }}
+    {{ template "footer" }}
+    </body>
+    <!-- End Body -->
+    </html>
+{{ end }}

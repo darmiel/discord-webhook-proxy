@@ -1,0 +1,33 @@
+{{ define "customCSS" }}
+{{ end }}
+
+{{ define "title" }}
+    whgoxy - 404 :(
+{{ end }}
+
+{{ define "content" }}
+    <section id="welcome">
+        <div class="container py-5">
+            <div class="row">
+                <div class="col-md-6" id="sectionLeft">
+                    <h1 class="text-light text-right">404</h1>
+                    <h2 class="text-light my-5">
+                        I don't know where you were going, but this is not the place for you :(
+                    </h2>
+
+                    <small class="text-muted">{{.CurrentURL}}</small>
+
+                    <a class="btn text-white discordStyledButton" href="/">Home</a>
+                </div>
+
+                <div class="col-md-6 py-5">
+                    <img
+                            src="https://www.hostinger.fr/assets/lang/fr/images/404-3a53e76ef1.png"
+                            alt="404"
+                            srcset=""
+                    />
+                </div>
+            </div>
+        </div>
+    </section>
+{{ end }}

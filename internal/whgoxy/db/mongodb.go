@@ -2,7 +2,7 @@ package db
 
 import (
 	"context"
-	"github.com/darmiel/whgoxy/discord"
+	"github.com/darmiel/whgoxy/internal/whgoxy/discord"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"

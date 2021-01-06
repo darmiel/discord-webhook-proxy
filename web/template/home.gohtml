@@ -1,0 +1,88 @@
+{{ define "customCSS" }}
+{{ end }}
+
+{{ define "title" }}
+    whgoxy - Home
+{{ end }}
+
+{{ define "content" }}
+    <section id="welcome">
+        <div class="container py-5">
+            <div class="row">
+                <div class="col-md-6" id="sectionLeft">
+                    <h1 class="text-light text-right">Discord Webhook Proxy</h1>
+                    <h2 class="text-light my-5">
+                        Customizable proxy for Discord webhooks to make them accessible
+                        to a variety of software that does not support Discord webhooks.
+                    </h2>
+
+                    {{ if .User }}
+                        <a class="btn text-dark btn-light" href="/dashboard">Dashboard</a>
+                    {{ else }}
+                        <a class="btn text-white discordStyledButton" href="/login">Log in with Discord</a>
+                    {{ end }}
+                </div>
+
+                <div class="col-md-6 py-5">
+                    <img
+                            src="https://discord.com/assets/d0d4785a2a708e2e6aae274cbe13cb6c.svg"
+                            alt=""
+                            srcset=""
+                    />
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="pt-5 mb-4" id="features">
+        <div class="container-lg card-columns text-center">
+            <div class="card featureCard">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Card title</h5>
+                    <a href="#" class="btn discordStyledButton text-white">Click</a>
+                </div>
+                <img
+                        src="https://source.unsplash.com/random/600x400"
+                        class="card-img"
+                        alt="..."
+                />
+            </div>
+
+            <div class="card featureCard">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Card title</h5>
+                    <a href="#" class="btn discordStyledButton text-white">Click</a>
+                </div>
+                <img
+                        src="https://source.unsplash.com/random/600x400"
+                        class="card-img"
+                        alt="..."
+                />
+            </div>
+
+            <div class="card featureCard">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Card title</h5>
+                    <a href="#" class="btn discordStyledButton text-white">Click</a>
+                </div>
+                <img
+                        src="https://source.unsplash.com/random/600x400"
+                        class="card-img"
+                        alt="..."
+                />
+            </div>
+
+            <div class="card featureCard">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Card title</h5>
+                    <a href="#" class="btn discordStyledButton text-white">Click</a>
+                </div>
+                <img
+                        src="https://source.unsplash.com/random/600x400"
+                        class="card-img"
+                        alt="..."
+                />
+            </div>
+        </div>
+    </div>
+{{ end }}

@@ -1,0 +1,13 @@
+RedirectURL = "http://localhost:1337/callback"
+ClientID = ""
+ClientSecret = ""
+Scopes = [ "identify" ]
+
+# Endpoint
+AuthURL = "https://discord.com/api/oauth2/authorize"
+TokenURL = "https://discord.com/api/oauth2/token"
+
+# Cookie
+CookieHost = "localhost"
+CookieSecret = ""
+CookieName = "whgoxy-authenticated"

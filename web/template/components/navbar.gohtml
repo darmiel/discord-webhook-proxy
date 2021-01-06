@@ -1,0 +1,70 @@
+{{ define "navbar" }}
+    <nav class="navbar navbar-dark navbar-expand-md" id="navbar">
+        <div class="container-xl">
+            <div class="row container-fluid">
+
+                <a class="navbar-brand col-3 m-0" href="#">
+                    <!--
+                        <img src="https://source.unsplash.com/random/128x128" alt="" width="$0" height="40"
+                             class="d-inline-block align-middle">
+                    -->
+                    <span class="d-none d-md-inline navbar-item font-weight-bold">WHGoxy</span>
+                </a>
+
+                <div class="d-md-none col-6 text-center">
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText"
+                            aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                </div>
+
+                <div class="col-md-6 collapse show" id="navbarText">
+                    <ul class="navbar-nav justify-content-center">
+                        <!-- Home -->
+                        <li class="nav-item">
+                            <a class="nav-link text-white" aria-current="page" href="/">Home</a>
+                        </li>
+
+                        <!-- Dashboard -->
+                        {{ if .User }}
+                            <li class="nav-item">
+                                <a class="nav-link text-white" href="/dashboard">Dashboard</a>
+                            </li>
+                        {{ end }}
+
+                        <!-- Features -->
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="/#features">Features</a>
+                        </li>
+
+                        <!-- GitHub -->
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="https://github.com/darmiel/discord-webhook-proxy">
+                                <img src="/static/img/GitHub-Mark-Light-32px.png" height="24px" alt="GitHub">
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="col-3 text-end">
+                    <!-- Check if user is logged in -->
+                    {{ if .User }}
+                        <!-- Discord Info -->
+                        <a href="/dashboard" class="btn btn-light discord-button navbar-item">Dashboard</a>
+
+                        <a class="navbar-brand col-3 m-0" href="/logout">
+                            <span class="text-muted">Hi,</span>
+                            <span class="d-none d-md-inline navbar-item font-weight-bold">{{ .User.Username }}</span>
+                            <img src="{{ .User | Avatar }}" alt="" width="$0" height="40"
+                                 class="d-inline-block align-middle">
+                        </a>
+                    {{ else }}
+                        <!-- Show Login Button -->
+                        <a href="/login" class="btn text-white discordStyledButton navbar-item">Discord Login</a>
+                    {{ end }}
+                </div>
+            </div>
+
+        </div>
+    </nav>
+{{ end }}

@@ -1,0 +1,2 @@
+WebDir = "./web"
+Addr = ":1337"
