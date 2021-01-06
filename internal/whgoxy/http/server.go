@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/darmiel/whgoxy/internal/whgoxy/config"
 	"github.com/darmiel/whgoxy/internal/whgoxy/db"
+	"github.com/darmiel/whgoxy/internal/whgoxy/http/auth"
 	"github.com/gorilla/mux"
 	"html/template"
 	"io/ioutil"
@@ -45,6 +46,7 @@ func (ws *WebServer) updateRoutes() {
 
 	// routes
 	router.HandleFunc("/", ws.homeRouteHandler)
+	router.HandleFunc("/create", ws.createRouteHandler)
 
 	// 404
 	router.NotFoundHandler = http.HandlerFunc(ws.error404)
@@ -103,25 +105,25 @@ func (ws *WebServer) Exec(name string, r *http.Request, w http.ResponseWriter, d
 	// CurrentURL
 	data["CurrentURL"] = r.URL.String()
 
-	// // User
-	// if user, ok := auth.GetUser(r); ok && user != nil {
-	// 	data["User"] = user.DiscordUser
-	// 	log.Println("OK user found:", user, ok)
-	// } else {
-	// 	// // debug user
-	// 	// // TODO: Remove me later
-	// 	// data["User"] = &discord.DiscordUser{
-	// 	// 	UserID:        "150347348088848384",
-	// 	// 	Username:      "d2a",
-	// 	// 	Avatar:        "408d6f884febd122f5252e2fc6d93c2e",
-	// 	// 	Discriminator: "1325",
-	// 	// 	PublicFlags:   256,
-	// 	// 	Flags:         256,
-	// 	// 	Locale:        "en-US",
-	// 	// 	MFAEnabled:    true,
-	// 	// }
-	// 	log.Println("ERR user not found:", user, ok)
-	// }
+	// User
+	if user, ok := auth.GetUser(r); ok && user != nil {
+		data["User"] = user.DiscordUser
+		log.Println("OK user found:", user, ok)
+	} else {
+		// // debug user
+		// // TODO: Remove me later
+		// data["User"] = &discord.DiscordUser{
+		// 	UserID:        "150347348088848384",
+		// 	Username:      "d2a",
+		// 	Avatar:        "408d6f884febd122f5252e2fc6d93c2e",
+		// 	Discriminator: "1325",
+		// 	PublicFlags:   256,
+		// 	Flags:         256,
+		// 	Locale:        "en-US",
+		// 	MFAEnabled:    true,
+		// }
+		log.Println("ERR user not found:", user, ok)
+	}
 
 	// get template
 	tpl, ok := ws.templates[name]

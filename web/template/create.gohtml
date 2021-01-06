@@ -1,0 +1,36 @@
+{{ define "customCSS" }}
+{{ end }}
+
+{{ define "title" }}
+    whgoxy - Home
+{{ end }}
+
+{{ define "content" }}
+    <section id="welcome">
+        <div class="container py-5">
+            <div class="row">
+                <div class="col-md-6" id="sectionLeft">
+                    {{ if not .User }}
+                        <h1 class="text-light text-right">Please log in</h1>
+                        <h2 class="text-light my-5">
+                            In order to prevent spam and not to overuse the resources, we ask you to log in with
+                            Discord.
+                            You can edit the webhooks later with your account.
+                        </h2>
+
+                    {{ else }}
+                        <h1 class="text-light text-right">Create</h1>
+                        <h2 class="text-light my-5">
+                            <form>
+                                <textarea>
+
+                                </textarea>
+                                <button>Create</button>
+                            </form>
+                        </h2>
+                    {{ end }}
+                </div>
+            </div>
+        </div>
+    </section>
+{{ end }}
