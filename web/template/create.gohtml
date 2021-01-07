@@ -44,11 +44,28 @@
                                     class="form-control bg-dark text-light blurple-border"
                                     id="payload"
                                     placeholder=""
-                                    rows="15"
+                                    rows="20"
                                     required
                             >
 {
-  "content": "@everyone"
+  "content": "[ @everyone ]",
+  "username": "Notify for {{`{{ .Camera.Name }}`}}",
+  "avatar_url": "{{`{{ .Camera.Avatar }}`}}",
+  "embed": [
+    {
+      "title": "👉 Live stream",
+      "description": "Detected motion on camera {{`{{ .Camera.Name }}`}}",
+      "color": 16725044,
+      "fields": [
+        {"name": "📸", "value": "{{`{{ .Camera.Name }}`}}", "inline": true},
+        {"name": "📸", "value": "{{`{{ .Camera.ID }}`}}", "inline": true}
+      ],
+      "author": {
+        "name": "{{`{{ .Camera.Name}}`}} / {{`{{ .Camera.ID }}`}}",
+        "icon_url": "{{`{{ .Camera.Avatar }}`}}"
+      }
+    }
+  ]
 }</textarea>
                             <small class="text-danger" style="display: none" id="ise">Syntax error.</small>
                         </div>
