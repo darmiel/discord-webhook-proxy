@@ -6,31 +6,68 @@
 {{ end }}
 
 {{ define "content" }}
+    <!-- Start Content -->
     <section id="welcome">
         <div class="container py-5">
             <div class="row">
                 <div class="col-md-6" id="sectionLeft">
-                    {{ if not .User }}
-                        <h1 class="text-light text-right">Please log in</h1>
-                        <h2 class="text-light my-5">
-                            In order to prevent spam and not to overuse the resources, we ask you to log in with
-                            Discord.
-                            You can edit the webhooks later with your account.
-                        </h2>
+                    <h1 class="text-blurple text-right">Create</h1>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4 order-md-2 mb-4">
+                    <h4 class="d-flex justify-content-between align-items-center mb-3">
+                        <span class="text-muted">Found Placeholders</span>
+                        <span class="badge badge-secondary badge-pill" id="inoph">0</span>
+                    </h4>
 
-                    {{ else }}
-                        <h1 class="text-light text-right">Create</h1>
-                        <h2 class="text-light my-5">
-                            <form>
-                                <textarea>
+                    <ul class="list-group mb-3 bg-dark" id="iulph">
+                        <!-- Add me here -->
+                    </ul>
 
-                                </textarea>
-                                <button>Create</button>
-                            </form>
-                        </h2>
-                    {{ end }}
+                    <form class="card p-2 bg-dark">
+                        <button type="submit" class="btn btn-blurple">
+                            Test & Save Webhook
+                        </button>
+                    </form>
+                </div>
+
+                <div class="col-md-8 order-md-1">
+                    <h4 class="d-flex justify-content-between align-items-center mb-3">
+                        <span class="text-muted">Create Webhook</span>
+                    </h4>
+
+                    <form class="needs-validation" novalidate>
+                        <div class="col-md-12 mb-3">
+                            <label for="payload" class="text-muted">Payload</label>
+                            <textarea
+                                    class="form-control bg-dark text-light blurple-border"
+                                    id="payload"
+                                    placeholder=""
+                                    rows="15"
+                                    required
+                            >
+{
+  "content": "@everyone"
+}</textarea>
+                            <small class="text-danger" style="display: none" id="ise">Syntax error.</small>
+                        </div>
+
+                        <div class="md-3">
+                            <label for="webhook" class="text-muted">Webhook-URL</label>
+                            <input
+                                    type="text"
+                                    id="webhook"
+                                    class="form-control bg-dark text-light blurple-border"
+                                    placeholder="https://discord.com/api/webhooks/..."
+                                    required
+                            />
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
     </section>
+
+    <script src="/static/js/create.js"></script>
 {{ end }}

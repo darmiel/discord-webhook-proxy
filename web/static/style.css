@@ -1,9 +1,39 @@
+@import url("https://fonts.googleapis.com/css2?family=Staatliches&display=swap");
+
 :root {
     --discord-black: #23272A
 }
 
+body {
+    border-top: 5px solid #7289da;
+    background: #23272A ;
+}
+
+#payload {
+    font-family: "Courier New", Courier, monospace;
+}
+
+.blurple-border {
+    border-bottom: 2px solid #7289da;
+    border-top: 1px solid #222222;
+    border-left: 1px solid #222222;
+    border-right: 1px solid #222222;
+}
+
+.btn-blurple {
+    background: #7289DA;
+    color: #FFFFFF;
+}
+
+.text-blurple {
+    color: #7289da;
+}
+
+
+
 h1 {
     font-size: 56px;
+    font-family: "Staatliches", cursive;
 }
 
 h2 {
@@ -107,4 +137,8 @@ h2 {
     .featureCard {
         width: 95%;
     }
+}
+
+.wave {
+    background: #23272A;
 }
