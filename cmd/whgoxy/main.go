@@ -13,10 +13,10 @@ import (
 
 func main() {
 	// load config
-	config.Load()
+	conf := config.Load()
 
 	// load database
-	database, err := db.NewDatabase(config.ConfigMongo)
+	database, err := db.NewDatabase(conf.Mongo)
 	if err != nil {
 		log.Fatalln("❌ Error connecting to database:", database)
 		return
@@ -29,17 +29,16 @@ func main() {
 	}()
 
 	// create web server
-	webConfig := config.ConfigWeb
-	ws := http.NewWebServer(webConfig, database)
+	ws := http.NewWebServer(conf.Web, database)
 
 	// auth
-	auth.InitOAuth2(config.ConfigOAuth, ws.Router)
+	auth.InitOAuth2(conf.Auth, ws.Router)
 
 	if err := ws.Run(); err != nil {
 		panic(err)
 	}
 
-	log.Println("✅  whgoxy is now (hopefully) running on " + webConfig.Addr)
+	log.Println("✅  whgoxy is now (hopefully) running on " + conf.Web.Addr)
 	log.Println("Press CTRL-C to exit gracefully.")
 
 	sc := make(chan os.Signal, 1)

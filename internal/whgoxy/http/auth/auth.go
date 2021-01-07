@@ -13,7 +13,9 @@ import (
 var (
 	authenticatedUsers = make(map[string]*User)
 	oauthConfig        *oauth2.Config
-	cookieSecret       []byte
+
+	cookieSecret []byte
+	cookieName   string
 )
 
 func InitOAuth2(conf config.OAuthConfig, router *mux.Router) {
@@ -29,6 +31,7 @@ func InitOAuth2(conf config.OAuthConfig, router *mux.Router) {
 	}
 
 	cookieSecret = []byte(conf.CookieSecret)
+	cookieName = conf.CookieName
 
 	// routes
 	router.HandleFunc("/login", handleLoginRoute)
@@ -37,7 +40,7 @@ func InitOAuth2(conf config.OAuthConfig, router *mux.Router) {
 }
 
 func GetLoginCookie(r *http.Request) (value string, ok bool) {
-	cookie, err := r.Cookie(config.ConfigOAuth.CookieName)
+	cookie, err := r.Cookie(cookieName)
 	if err != nil {
 		return "", false
 	}
@@ -86,7 +89,7 @@ func LoginUser(w http.ResponseWriter, u *User) {
 
 	// add cookie
 	http.SetCookie(w, &http.Cookie{
-		Name:    config.ConfigOAuth.CookieName,
+		Name:    cookieName,
 		Value:   cookie,
 		Expires: time.Now().Add(8 * time.Hour),
 	})
@@ -99,7 +102,7 @@ func LogoutUser(w http.ResponseWriter, u *User) {
 	log.Println("Logging out user", u.DiscordUser.Username, "...")
 
 	http.SetCookie(w, &http.Cookie{
-		Name:  config.ConfigOAuth.CookieName,
+		Name:  cookieName,
 		Value: "",
 	})
 
