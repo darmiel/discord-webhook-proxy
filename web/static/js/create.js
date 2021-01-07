@@ -4,11 +4,17 @@ const ise = document.getElementById("ise");
 
 const payload = document.getElementById("payload");
 
+
+// .Camera.Vendor.Model
+// -> ["model"] = abc
+// a["Camera"]["Vendor"]["Model"] = abc
+
 function updateSyntax(def) {
     const text = payload.value;
     const re = /\{\{(.*?)\}\}/gm;
 
     const placeholders = [];
+    const a = [];
 
     // update <li>
     iulph.innerHTML = "";
@@ -31,6 +37,12 @@ function updateSyntax(def) {
   </div>
 </li>
 `;
+                // build json data
+                if (ph.startsWith(".")) {
+                    const spl = ph.split(".");
+                    for (let i = spl.length - 1; i >= 1; i--) {
+                    }
+                }
             }
         }
     } while (m);
