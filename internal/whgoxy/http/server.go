@@ -137,6 +137,8 @@ func (ws *WebServer) Exec(name string, r *http.Request, w http.ResponseWriter, d
 }
 
 func (ws *WebServer) MustExec(name string, w http.ResponseWriter, r *http.Request, data map[string]interface{}) {
+	log.Println(r.RemoteAddr, "requested uri:", r.RequestURI)
+
 	if err := ws.Exec(name, r, w, data); err != nil {
 		log.Println("[WARNING] Error occured on rendering template:", err)
 	}

@@ -50,9 +50,9 @@
                     <!-- Check if user is logged in -->
                     {{ if .User }}
                         <!-- Discord Info -->
-                        <a href="/dashboard" class="btn btn-light discord-button navbar-item">Dashboard</a>
+                        <a href="/dashboard" class="btn btn-light discord-button navbar-item navbar-btn col-3 m-2">Dashboard</a>
 
-                        <a class="navbar-brand col-3 m-0" href="/logout">
+                        <a class="navbar-brand col-3 m-0 align-middle" href="/logout">
                             <span class="text-muted">Hi,</span>
                             <span class="d-none d-md-inline navbar-item font-weight-bold">{{ .User.Username }}</span>
                             <img src="{{ .User | Avatar }}" alt="" width="$0" height="40"
