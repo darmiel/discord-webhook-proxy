@@ -3,9 +3,30 @@ package db
 import (
 	"context"
 	"fmt"
+	"github.com/darmiel/whgoxy/internal/whgoxy/config"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"log"
 )
+
+func NewDatabase(options config.MongoConfig) (db Database, err error) {
+	log.Println("👉 Using mongo as database!")
+
+	var uri string
+	if options.MongoConnectionString != "" {
+		uri = options.MongoConnectionString
+	} else {
+		uri = BuildApplyURI(options.MongoAuthUser, options.MongoAuthPass, options.MongoHost, options.MongoDatabase)
+	}
+
+	log.Println("🤫", uri)
+
+	db, err = ConnectMongoDatabase(uri, options.MongoDatabase)
+	if err != nil {
+		return nil, err
+	}
+	return db, nil
+}
 
 func ConnectMongoDatabase(applyURI string, database string) (mdb Database, err error) {
 	uri := options.Client().ApplyURI(applyURI)

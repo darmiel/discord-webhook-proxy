@@ -46,8 +46,21 @@ func (ws *WebServer) updateRoutes() {
 	router.PathPrefix("/static/").Handler(prefix)
 
 	// routes
-	router.HandleFunc("/", ws.homeRouteHandler)
-	router.HandleFunc("/create", ws.createRouteHandler)
+	type Route struct {
+		Path string
+		Func func(http.ResponseWriter, *http.Request)
+	}
+
+	routes := []Route{
+		{"/", ws.homeRouteHandler},
+		{"/create", ws.createRouteHandler},
+		{"/call/{user_id}/{uid}/{secret}", ws.safeWebhookRouteHandler},
+	}
+
+	for _, r := range routes {
+		log.Println("[Router] Registered route ", r.Path)
+		router.HandleFunc(r.Path, r.Func)
+	}
 
 	// 404
 	router.NotFoundHandler = http.HandlerFunc(ws.error404)

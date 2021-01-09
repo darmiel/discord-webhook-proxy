@@ -24,12 +24,15 @@ func generateState() string {
 	return output.String()
 }
 
+// handleLoginRoute creates an OAuth2 login URL and redirects the user to it.
 func handleLoginRoute(w http.ResponseWriter, r *http.Request) {
 	state := generateState()
 	url := oauthConfig.AuthCodeURL(state)
 	http.Redirect(w, r, url, http.StatusTemporaryRedirect)
 }
 
+// handleLogoutRoute removes the user from the cache
+// and sets the cookie to an empty string ("")
 func handleLogoutRoute(w http.ResponseWriter, r *http.Request) {
 	user, ok := GetUser(r)
 	if !ok {

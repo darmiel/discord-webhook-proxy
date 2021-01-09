@@ -5,6 +5,9 @@
     whgoxy - Home
 {{ end }}
 
+
+
+
 {{ define "content" }}
     <!-- Start Content -->
     <section id="welcome">
@@ -14,39 +17,62 @@
                     <h1 class="text-blurple text-right">Create</h1>
                 </div>
             </div>
-            <div class="row">
-                <div class="col-md-4 order-md-2 mb-4">
-                    <h4 class="d-flex justify-content-between align-items-center mb-3">
-                        <span class="text-muted">Found Placeholders</span>
-                        <span class="badge badge-secondary badge-pill" id="inoph">0</span>
-                    </h4>
 
-                    <ul class="list-group mb-3 bg-dark" id="iulph">
-                        <!-- Add me here -->
-                    </ul>
+            {{ template "form" }}
+        </div>
+    </section>
 
-                    <form class="card p-2 bg-dark">
-                        <button type="submit" class="btn btn-blurple">
-                            Test & Save Webhook
-                        </button>
-                    </form>
+    <script src="/static/js/create.js"></script>
+{{ end }}
+
+
+
+
+{{ define "form" }}
+    <div class="row">
+        <div class="col-md-4 order-md-2 mb-4">
+            <h4 class="d-flex justify-content-between align-items-center mb-3">
+                <span class="text-muted">Found Placeholders</span>
+                <span class="badge badge-secondary badge-pill" id="inoph">0</span>
+            </h4>
+
+            <ul class="list-group mb-3 bg-dark" id="iulph">
+                <!-- Add me here -->
+            </ul>
+
+            <form class="card p-2 bg-dark">
+                <button type="submit" class="btn btn-blurple">
+                    Test & Save Webhook
+                </button>
+            </form>
+        </div>
+
+        <div class="col-md-8 order-md-1">
+            <h4 class="d-flex justify-content-between align-items-center mb-3">
+                <span class="text-muted">Create Webhook</span>
+            </h4>
+
+            <form class="needs-validation" novalidate>
+                <div class="col-md-12 md-3">
+                    <label for="webhook" class="text-muted">Webhook-URL</label>
+                    <input
+                            type="text"
+                            id="webhook"
+                            class="form-control bg-dark text-light blurple-border"
+                            placeholder="https://discord.com/api/webhooks/..."
+                            required
+                    />
                 </div>
 
-                <div class="col-md-8 order-md-1">
-                    <h4 class="d-flex justify-content-between align-items-center mb-3">
-                        <span class="text-muted">Create Webhook</span>
-                    </h4>
-
-                    <form class="needs-validation" novalidate>
-                        <div class="col-md-12 mb-3">
-                            <label for="payload" class="text-muted">Payload</label>
-                            <textarea
-                                    class="form-control bg-dark text-light blurple-border"
-                                    id="payload"
-                                    placeholder=""
-                                    rows="20"
-                                    required
-                            >
+                <div class="col-md-12 mb-3">
+                    <label for="payload" class="text-muted">Payload</label>
+                    <textarea
+                            class="form-control bg-dark text-light blurple-border"
+                            id="payload"
+                            placeholder=""
+                            rows="20"
+                            required
+                    >
 {
   "content": "[ @everyone ]",
   "username": "Notify for {{`{{ .Camera.Name }}`}}",
@@ -67,24 +93,20 @@
     }
   ]
 }</textarea>
-                            <small class="text-danger" style="display: none" id="ise">Syntax error.</small>
-                        </div>
-
-                        <div class="md-3">
-                            <label for="webhook" class="text-muted">Webhook-URL</label>
-                            <input
-                                    type="text"
-                                    id="webhook"
-                                    class="form-control bg-dark text-light blurple-border"
-                                    placeholder="https://discord.com/api/webhooks/..."
-                                    required
-                            />
-                        </div>
-                    </form>
+                    <small class="text-danger" style="display: none" id="ise">Syntax error.</small>
                 </div>
-            </div>
-        </div>
-    </section>
 
-    <script src="/static/js/create.js"></script>
+                <div class="md-3">
+                    <label for="uid" class="text-muted">UID (must be unique)</label>
+                    <input
+                            type="text"
+                            id="uid"
+                            class="form-control bg-dark text-light blurple-border"
+                            placeholder="my-webhook0"
+                            required
+                    />
+                </div>
+            </form>
+        </div>
+    </div>
 {{ end }}

@@ -14,18 +14,19 @@ const CollectionName string = "whgoxy"
 type Database interface {
 	// SaveWebhook inserts the specified webhook into the database or updates it if the _id is already present
 	// returns an error if anything went wrong.
-	SaveWebhook(w *discord.SavedWebhook) (err error)
+	SaveWebhook(w *discord.Webhook) (err error)
 
-	// FindWebhook searches for a webhook by the given id (uuid)
+	// FindWebhook searches for a webhook by the given id (uid)
 	// returns the webhook if found, otherwise an error if anything went wrong.
-	FindWebhook(uuid string) (w *discord.SavedWebhook, err error)
+	FindWebhook(uid string, userID string) (w *discord.Webhook, err error)
 
-	// FindWebhook searches for a webhook by the given id (uuid) AND the matching secret
+	// FindWebhook searches for a webhook by the given id (uid) AND the matching secret
 	// returns the webhook if found, otherwise an error if anything went wrong.
-	FindWebhookWithSecret(uuid string, secret string) (w *discord.SavedWebhook, err error)
+	FindWebhookWithSecret(uid string, userID string, secret string) (w *discord.Webhook, err error)
 
 	Disconnect() (err error)
 }
+
 type MongoDatabase struct {
 	client   *mongo.Client
 	context  context.Context
@@ -37,8 +38,8 @@ func (mdb *MongoDatabase) collection() (collection *mongo.Collection) {
 }
 
 // SaveWebhook ...
-func (mdb *MongoDatabase) SaveWebhook(w *discord.SavedWebhook) (err error) {
-	filter := bson.M{"uuid": w.UUID}
+func (mdb *MongoDatabase) SaveWebhook(w *discord.Webhook) (err error) {
+	filter := w.CreateFilter(false)
 	update := bson.M{"$set": w}
 
 	updateOpts := options.Update().SetUpsert(true)
@@ -48,23 +49,19 @@ func (mdb *MongoDatabase) SaveWebhook(w *discord.SavedWebhook) (err error) {
 }
 
 // FindWebhook ...
-func (mdb *MongoDatabase) FindWebhook(uuid string) (w *discord.SavedWebhook, err error) {
-	filter := bson.M{
-		"uuid": uuid,
-	}
-	w, err = findWebhookWithFilter(mdb, filter)
+func (mdb *MongoDatabase) FindWebhook(uid string, userID string) (w *discord.Webhook, err error) {
+	filter := (&discord.Webhook{UserID: userID, UID: uid}).CreateFilter(false)
+	log.Println("Filter:", filter)
+	w, err = mdb.findWebhookWithFilter(filter)
+	log.Println("  -> Result:", w, err)
+	log.Println(mdb.database)
 	return w, err
 }
 
 // FindWebhookWithSecret ...
-func (mdb *MongoDatabase) FindWebhookWithSecret(uuid string, secret string) (w *discord.SavedWebhook, err error) {
-	filter := bson.M{
-		"$and": []bson.M{
-			{"uuid": uuid},
-			{"secret": secret},
-		},
-	}
-	w, err = findWebhookWithFilter(mdb, filter)
+func (mdb *MongoDatabase) FindWebhookWithSecret(uid string, userID string, secret string) (w *discord.Webhook, err error) {
+	filter := (&discord.Webhook{UserID: userID, UID: uid}).CreateFilter(true)
+	w, err = mdb.findWebhookWithFilter(filter)
 	return w, err
 }
 
@@ -83,13 +80,13 @@ func NewMongoDatabase(client *mongo.Client, context context.Context, database st
 	}
 }
 
-func findWebhookWithFilter(mdb *MongoDatabase, filter bson.M) (w *discord.SavedWebhook, err error) {
+func (mdb *MongoDatabase) findWebhookWithFilter(filter bson.M) (w *discord.Webhook, err error) {
 	res := mdb.collection().FindOne(mdb.context, filter)
 	if res.Err() != nil {
 		return nil, res.Err()
 	}
 
-	w = &discord.SavedWebhook{}
+	w = &discord.Webhook{}
 	if err = res.Decode(w); err != nil {
 		return nil, err
 	}

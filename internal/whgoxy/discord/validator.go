@@ -19,7 +19,7 @@ var (
 	errorDataTooLong        = errors.New("data too long")
 )
 
-func (w *SavedWebhook) CheckValidity(sendTest bool) (err error) {
+func (w *Webhook) CheckValidity(sendTest bool) (err error) {
 	// check webhook length
 	l := len(w.WebhookURL)
 	if l < webhookURLMinLen {

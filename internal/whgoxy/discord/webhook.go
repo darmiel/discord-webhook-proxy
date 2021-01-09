@@ -15,29 +15,55 @@ import (
 
 type WebhookData bson.M
 
-type SavedWebhook struct {
-	UUID       string       `bson:"uuid"`
-	Secret     string       `bson:"secret"`
-	WebhookURL string       `bson:"webhook_url"`
-	Data       *WebhookData `bson:"data"`
+type WebhookStats struct {
+	SuccessfulRequests uint64
+	ErroredRequests    uint64
 }
 
-// NewWebhook creates a new webhook and generates a secret and a UUID
-func NewWebhook(webhookURL string, data *WebhookData) (w *SavedWebhook) {
+type Webhook struct {
+	UID        string        `bson:"uid"`
+	UserID     string        `bson:"user_id"`
+	Secret     string        `bson:"secret"`
+	WebhookURL string        `bson:"webhook_url"`
+	Data       *WebhookData  `bson:"data"`
+	Stats      *WebhookStats `bson:"stats"`
+}
+
+// NewWebhook creates a new webhook and generates a secret and a UID
+func NewWebhook(userID string, webhookURL string, data *WebhookData) (w *Webhook) {
 	u := uuid.New().String()
 	s := generateSecret()
 
-	return &SavedWebhook{
-		u,
-		s,
-		webhookURL,
-		data,
+	return &Webhook{
+		UID:        u,
+		UserID:     userID,
+		Secret:     s,
+		WebhookURL: webhookURL,
+		Data:       data,
+		Stats: &WebhookStats{
+			SuccessfulRequests: 0,
+			ErroredRequests:    0,
+		},
 	}
 }
 
+func (w *Webhook) CreateFilter(includeSecret bool) (filter bson.M) {
+	params := []bson.M{
+		{"uid": w.UID},
+		{"user_id": w.UserID},
+	}
+	if includeSecret {
+		params = append(params, bson.M{"secret": w.Secret})
+	}
+	filter = bson.M{
+		"$and": params,
+	}
+	return
+}
+
 // Send sends the webhook directly to discord without any further validation checks
-// so be sure to check the SavedWebhook before calling Send
-func (w *SavedWebhook) Send(param ...map[string]string) (sentJson string, err error) {
+// so be sure to check the Webhook before calling Send
+func (w *Webhook) Send(param ...map[string]string) (sentJson string, err error) {
 	// marshal data
 	jsdb, err := json.Marshal(w.Data)
 	if err != nil {
