@@ -16,8 +16,8 @@ import (
 type WebhookData bson.M
 
 type WebhookStats struct {
-	SuccessfulRequests uint64
-	ErroredRequests    uint64
+	SuccessfulRequests uint64 `bson:"successful_requests"`
+	ErroredRequests    uint64 `bson:"errored_requests"`
 }
 
 type Webhook struct {
@@ -30,14 +30,19 @@ type Webhook struct {
 }
 
 // NewWebhook creates a new webhook and generates a secret and a UID
-func NewWebhook(userID string, webhookURL string, data *WebhookData) (w *Webhook) {
-	u := uuid.New().String()
-	s := generateSecret()
+func NewWebhook(userID string, uid string, webhookURL string, secret string, data *WebhookData) (w *Webhook) {
+	if uid == "" {
+		uid = uuid.New().String()
+	}
+
+	if secret == "" {
+		secret = generateSecret()
+	}
 
 	return &Webhook{
-		UID:        u,
+		UID:        uid,
 		UserID:     userID,
-		Secret:     s,
+		Secret:     secret,
 		WebhookURL: webhookURL,
 		Data:       data,
 		Stats: &WebhookStats{

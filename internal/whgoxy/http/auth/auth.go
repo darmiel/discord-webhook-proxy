@@ -2,6 +2,7 @@ package auth
 
 import (
 	"github.com/darmiel/whgoxy/internal/whgoxy/config"
+	"github.com/darmiel/whgoxy/internal/whgoxy/discord"
 	"github.com/dchest/authcookie"
 	"github.com/gorilla/mux"
 	"golang.org/x/oauth2"
@@ -50,6 +51,30 @@ func GetLoginCookie(r *http.Request) (value string, ok bool) {
 ///
 
 func GetUser(r *http.Request) (u *User, ok bool) {
+	// debug user
+	// TODO: Remove me later
+	u = &User{
+		DiscordUser: &discord.DiscordUser{
+			UserID:        "150347348088848384",
+			Username:      "d2a",
+			Avatar:        "408d6f884febd122f5252e2fc6d93c2e",
+			Discriminator: "1325",
+			PublicFlags:   256,
+			Flags:         256,
+			Locale:        "en-US",
+			MFAEnabled:    true,
+		},
+		Token: &oauth2.Token{
+			AccessToken:  "",
+			TokenType:    "",
+			RefreshToken: "",
+			Expiry:       time.Time{},
+		},
+	}
+	ok = true
+	return
+	//
+
 	// check if user sent a login cookie
 	value, ok := GetLoginCookie(r)
 	if !ok {
