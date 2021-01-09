@@ -3,6 +3,8 @@ package discord
 import (
 	"encoding/json"
 	"errors"
+	"log"
+	"regexp"
 )
 
 const (
@@ -15,9 +17,24 @@ const (
 var (
 	errorWebhookURLTooShort = errors.New("empty webhook too short")
 	errorWebhookURLTooLong  = errors.New("empty webhook too long")
+	errorUnknownWebhookURL  = errors.New("unknown webhook url")
 	errorDataTooShort       = errors.New("data too short")
 	errorDataTooLong        = errors.New("data too long")
 )
+
+var (
+	discordURLRegex *regexp.Regexp
+)
+
+func init() {
+	var err error
+	discordURLRegex, err = regexp.Compile("https://((ptb|canary)\\.)?discord(app)?\\.com/api/webhooks/[0-9]+/[A-Za-z0-9-]+")
+	if err != nil {
+		log.Fatalln("Error compiling regex expression:", err)
+		return
+	}
+	log.Println("Compiled regex:", discordURLRegex)
+}
 
 func (w *Webhook) CheckValidity(sendTest bool) (err error) {
 	// check webhook length
@@ -27,6 +44,12 @@ func (w *Webhook) CheckValidity(sendTest bool) (err error) {
 	} else if l > webhookURLMaxLen {
 		return errorWebhookURLTooLong
 	}
+
+	// check webhook url
+	if !discordURLRegex.Match([]byte(w.WebhookURL)) {
+		return errorUnknownWebhookURL
+	}
+	log.Println("Matched regex exp")
 
 	// check json validity
 	if data, err := json.Marshal(w); err != nil {
