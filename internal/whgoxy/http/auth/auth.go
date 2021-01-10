@@ -73,7 +73,6 @@ func GetUser(r *http.Request) (u *User, ok bool) {
 	}
 	ok = true
 	return
-	//
 
 	// check if user sent a login cookie
 	value, ok := GetLoginCookie(r)

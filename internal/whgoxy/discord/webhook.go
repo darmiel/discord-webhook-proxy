@@ -2,18 +2,18 @@ package discord
 
 import (
 	"bytes"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson"
+	"log"
 	"math"
 	"net/http"
 	"strconv"
 	"strings"
 )
 
-type WebhookData bson.M
+type WebhookData string
 
 type WebhookStats struct {
 	SuccessfulRequests uint64 `bson:"successful_requests"`
@@ -21,16 +21,16 @@ type WebhookStats struct {
 }
 
 type Webhook struct {
-	UID        string        `bson:"uid"`
-	UserID     string        `bson:"user_id"`
-	Secret     string        `bson:"secret"`
-	WebhookURL string        `bson:"webhook_url"`
-	Data       *WebhookData  `bson:"data"`
-	Stats      *WebhookStats `bson:"stats"`
+	UID        string       `bson:"uid"`
+	UserID     string       `bson:"user_id"`
+	Secret     string       `bson:"secret"`
+	WebhookURL string       `bson:"webhook_url"`
+	Data       WebhookData  `bson:"data"`
+	Stats      WebhookStats `bson:"stats"`
 }
 
 // NewWebhook creates a new webhook and generates a secret and a UID
-func NewWebhook(userID string, uid string, webhookURL string, secret string, data *WebhookData) (w *Webhook) {
+func NewWebhook(userID string, uid string, webhookURL string, secret string, data WebhookData) (w *Webhook) {
 	if uid == "" {
 		uid = uuid.New().String()
 	}
@@ -45,7 +45,7 @@ func NewWebhook(userID string, uid string, webhookURL string, secret string, dat
 		Secret:     secret,
 		WebhookURL: webhookURL,
 		Data:       data,
-		Stats: &WebhookStats{
+		Stats: WebhookStats{
 			SuccessfulRequests: 0,
 			ErroredRequests:    0,
 		},
@@ -69,13 +69,7 @@ func (w *Webhook) CreateFilter(includeSecret bool) (filter bson.M) {
 // Send sends the webhook directly to discord without any further validation checks
 // so be sure to check the Webhook before calling Send
 func (w *Webhook) Send(param ...map[string]string) (sentJson string, err error) {
-	// marshal data
-	jsdb, err := json.Marshal(w.Data)
-	if err != nil {
-		return "", err
-	}
-
-	jsd := string(jsdb)
+	jsd := string(w.Data)
 
 	// replace params in data
 	if param != nil && len(param) >= 1 && len(param[0]) > 0 {
@@ -91,6 +85,8 @@ func (w *Webhook) Send(param ...map[string]string) (sentJson string, err error) 
 			jsd = re.Replace(jsd)
 		}
 	}
+
+	log.Println("Sending data to discord:", jsd)
 
 	// Send to discord
 	reader := bytes.NewReader([]byte(jsd))

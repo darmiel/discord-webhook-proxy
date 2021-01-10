@@ -51,10 +51,7 @@ func (mdb *MongoDatabase) SaveWebhook(w *discord.Webhook) (err error) {
 // FindWebhook ...
 func (mdb *MongoDatabase) FindWebhook(uid string, userID string) (w *discord.Webhook, err error) {
 	filter := (&discord.Webhook{UserID: userID, UID: uid}).CreateFilter(false)
-	log.Println("Filter:", filter)
 	w, err = mdb.findWebhookWithFilter(filter)
-	log.Println("  -> Result:", w, err)
-	log.Println(mdb.database)
 	return w, err
 }
 

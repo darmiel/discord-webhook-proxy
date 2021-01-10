@@ -6,15 +6,16 @@ import (
 	"github.com/darmiel/whgoxy/internal/whgoxy/discord"
 	"github.com/darmiel/whgoxy/internal/whgoxy/http/auth"
 	"io/ioutil"
+	"log"
 	"net/http"
 )
 
 type CreateWebhookPayload struct {
-	UID        string               `json:"uid"`
-	UserID     string               `json:"user_id"`
-	Secret     string               `json:"secret"`
-	WebhookURL string               `json:"webhook_url"`
-	Data       *discord.WebhookData `json:"data"`
+	UID        string `json:"uid"`
+	UserID     string `json:"user_id"`
+	Secret     string `json:"secret"`
+	WebhookURL string `json:"webhook_url"`
+	Payload    string `json:"payload"`
 }
 
 func (ws *WebServer) createWebhookRouteHandler(w http.ResponseWriter, r *http.Request) {
@@ -30,6 +31,9 @@ func (ws *WebServer) createWebhookRouteHandler(w http.ResponseWriter, r *http.Re
 		_, _ = fmt.Fprintf(w, "Error (Request) reading your webhook: %s", err.Error())
 		return
 	}
+
+	// print data
+	log.Println("Data:", string(all))
 
 	// "validate" json and create webhook data
 	var data CreateWebhookPayload
@@ -60,7 +64,13 @@ func (ws *WebServer) createWebhookRouteHandler(w http.ResponseWriter, r *http.Re
 	}
 
 	// create webhook
-	webhook := discord.NewWebhook(user.DiscordUser.UserID, data.UID, data.WebhookURL, data.Secret, data.Data)
+	webhook := discord.NewWebhook(
+		user.DiscordUser.UserID,
+		data.UID,
+		data.WebhookURL,
+		data.Secret,
+		discord.WebhookData(data.Payload),
+	)
 
 	// validate webhook
 	err = webhook.CheckValidity(true)

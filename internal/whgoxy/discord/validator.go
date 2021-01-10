@@ -49,7 +49,6 @@ func (w *Webhook) CheckValidity(sendTest bool) (err error) {
 	if !discordURLRegex.Match([]byte(w.WebhookURL)) {
 		return errorUnknownWebhookURL
 	}
-	log.Println("Matched regex exp")
 
 	// check json validity
 	if data, err := json.Marshal(w); err != nil {

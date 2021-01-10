@@ -18,18 +18,19 @@
                 </div>
             </div>
 
-            {{ template "form" }}
+            {{ template "form" . }}
         </div>
     </section>
 
     <script src="/static/js/create.js"></script>
+    <script src="/static/js/create_req.js"></script>
 {{ end }}
-
-
 
 
 {{ define "form" }}
     <div class="row">
+
+        <!-- Right -->
         <div class="col-md-4 order-md-2 mb-4">
             <h4 class="d-flex justify-content-between align-items-center mb-3">
                 <span class="text-muted">Found Placeholders</span>
@@ -40,24 +41,31 @@
                 <!-- Add me here -->
             </ul>
 
-            <form class="card p-2 bg-dark">
+            <form class="card p-2 bg-dark" id="createForm">
                 <button type="submit" class="btn btn-blurple">
                     Test & Save Webhook
                 </button>
             </form>
         </div>
 
+        <!-- Left -->
         <div class="col-md-8 order-md-1">
             <h4 class="d-flex justify-content-between align-items-center mb-3">
                 <span class="text-muted">Create Webhook</span>
             </h4>
 
-            <form class="needs-validation" novalidate>
+            <form id="createDataForm">
+                <!-- user_id -->
+                <input type="hidden" name="user_id" value="{{ .User.UserID }}">
+                <input type="hidden" name="secret" value=""> <!-- "" = generate Secret -->
+
                 <div class="col-md-12 md-3">
-                    <label for="webhook" class="text-muted">Webhook-URL</label>
+                    <label for="webhook_url" class="text-muted">Webhook-URL</label>
+                    <!-- webhook_url -->
                     <input
                             type="text"
-                            id="webhook"
+                            id="webhook_url"
+                            name="webhook_url"
                             class="form-control bg-dark text-light blurple-border"
                             placeholder="https://discord.com/api/webhooks/..."
                             required
@@ -65,10 +73,12 @@
                 </div>
 
                 <div class="col-md-12 mb-3">
+                    <!-- payload -->
                     <label for="payload" class="text-muted">Payload</label>
                     <textarea
                             class="form-control bg-dark text-light blurple-border"
                             id="payload"
+                            name="payload"
                             placeholder=""
                             rows="20"
                             required
@@ -98,9 +108,11 @@
 
                 <div class="md-3">
                     <label for="uid" class="text-muted">UID (must be unique)</label>
+                    <!-- uid -->
                     <input
                             type="text"
                             id="uid"
+                            name="uid"
                             class="form-control bg-dark text-light blurple-border"
                             placeholder="my-webhook0"
                             required
