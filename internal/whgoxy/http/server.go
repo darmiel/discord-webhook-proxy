@@ -51,10 +51,17 @@ func (ws *WebServer) updateRoutes() {
 	}
 
 	routes := []Route{
+		// "static"
 		{"/", ws.homeRouteHandler},
 		{"/create", ws.createRouteHandler},
+		{"/examples", ws.exampleRouteHandler},
+
+		// "api"
 		{"/create/req", ws.createWebhookRouteHandler},
-		{"/call/{user_id}/{uid}/{secret}", ws.safeWebhookRouteHandler},
+		// {"/call/{user_id}/{uid}/{secret}", ws.safeWebhookRouteHandler},
+
+		// "other"
+		{"/call/json/{userid}/{uid}/{secret}", ws.jsonWebhookRouteHandler},
 	}
 
 	for _, r := range routes {

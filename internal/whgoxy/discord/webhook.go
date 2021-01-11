@@ -2,8 +2,8 @@ package discord
 
 import (
 	"bytes"
+	"encoding/json"
 	"errors"
-	"fmt"
 	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson"
 	"log"
@@ -11,6 +11,7 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"text/template"
 )
 
 type WebhookData string
@@ -52,6 +53,10 @@ func NewWebhook(userID string, uid string, webhookURL string, secret string, dat
 	}
 }
 
+func (w *Webhook) ParseNewLine() {
+	w.Data = WebhookData(strings.ReplaceAll(string(w.Data), "\n", ""))
+}
+
 func (w *Webhook) CreateFilter(includeSecret bool) (filter bson.M) {
 	params := []bson.M{
 		{"uid": w.UID},
@@ -68,31 +73,48 @@ func (w *Webhook) CreateFilter(includeSecret bool) (filter bson.M) {
 
 // Send sends the webhook directly to discord without any further validation checks
 // so be sure to check the Webhook before calling Send
-func (w *Webhook) Send(param ...map[string]string) (sentJson string, err error) {
-	jsd := string(w.Data)
-
+func (w *Webhook) Send(param ...interface{}) (sentJson string, err error) {
 	// replace params in data
-	if param != nil && len(param) >= 1 && len(param[0]) > 0 {
-		for key, value := range param[0] {
-			re := strings.NewReplacer(
-				fmt.Sprintf("{{%s}}", key), value,
-				fmt.Sprintf("{{ %s }}", key), value,
-
-				fmt.Sprintf("{{ %s}}", key), value, // also \       / "faulty" \            /
-				fmt.Sprintf("{{%s }}", key), value, //       replace            placeholders
-			)
-
-			jsd = re.Replace(jsd)
-		}
+	var parse *template.Template
+	parse, err = template.New("").Parse(string(w.Data))
+	if err != nil {
+		return
 	}
 
-	log.Println("Sending data to discord:", jsd)
+	// parse data
+	var data interface{}
+	if param != nil && len(param) >= 1 {
+		data = param[0]
+		if j, err := json.Marshal(data); err != nil {
+			log.Println("🌚 Webhook got data (as raw):", data)
+		} else {
+			log.Println("🌚 Webhook got data (as json):", string(j))
+		}
+	} else {
+		log.Println("🌚 Webhook got empty data.")
+	}
+
+	// execute template
+	var buffer bytes.Buffer
+	if err = parse.Execute(&buffer, data); err != nil {
+		return
+	}
+
+	// read string from buffer
+	jsd := buffer.String()
+	log.Println("👉 Sending data to webhook:", jsd)
 
 	// Send to discord
+	return w.sendJson(jsd)
+}
+
+func (w *Webhook) sendJson(jsd string) (sentJson string, err error) {
 	reader := bytes.NewReader([]byte(jsd))
-	req, err := http.NewRequest("POST", w.WebhookURL, reader)
+
+	var req *http.Request
+	req, err = http.NewRequest("POST", w.WebhookURL, reader)
 	if err != nil {
-		return "", err
+		return
 	}
 
 	req.Header.Set("Content-Type", "application/json")

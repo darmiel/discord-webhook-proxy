@@ -12,6 +12,10 @@ func (ws *WebServer) createRouteHandler(writer http.ResponseWriter, request *htt
 	ws.MustExec("create", writer, request, nil)
 }
 
+func (ws *WebServer) exampleRouteHandler(writer http.ResponseWriter, request *http.Request) {
+	ws.MustExec("examples", writer, request, nil)
+}
+
 func (ws *WebServer) error404(writer http.ResponseWriter, request *http.Request) {
 	ws.MustExec("err_404", writer, request, nil)
 }

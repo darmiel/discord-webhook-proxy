@@ -87,6 +87,7 @@ func (mdb *MongoDatabase) findWebhookWithFilter(filter bson.M) (w *discord.Webho
 	if err = res.Decode(w); err != nil {
 		return nil, err
 	}
+	w.ParseNewLine()
 
 	return w, nil
 }
