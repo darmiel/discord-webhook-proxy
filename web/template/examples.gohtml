@@ -1,0 +1,124 @@
+{{ define "customCSS" }}{{ end }}
+
+{{ define "title" }}whgoxy - Examples{{ end }}
+
+
+{{ define "content" }}
+    <!-- Start Highlight.JS -->
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/default.min.css">
+    <link rel="stylesheet"
+          href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/stackoverflow-dark.min.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <!-- End Hightlight.JS -->
+
+    <section id="welcome">
+        <div class="container py-5">
+            <div class="row">
+                <div class="col-md-6" id="sectionLeft">
+                    <h1 class="text-light text-right">Examples</h1>
+                    <h2 class="text-light my-5">
+                        Here are a few examples to show what <strong>whgoxy</strong> can do:
+                    </h2>
+                </div>
+
+                <div class="col-md-6 py-5">
+                    <img
+                            src="https://discord.com/assets/d0d4785a2a708e2e6aae274cbe13cb6c.svg"
+                            alt=""
+                            srcset=""
+                    />
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="pt-5 mb-4" id="features">
+        <div class="container-lg card-columns">
+            <div class="card featureCard">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Placeholders</h5>
+                </div>
+
+                {{ template "example-1" }}
+            </div>
+
+            <div class="card featureCard">
+                <div class="card-body text-center">
+                    <h5 class="card-title">List</h5>
+                </div>
+
+                {{ template "example-2" }}
+            </div>
+        </div>
+    </div>
+
+{{ end }}
+
+{{ define "example-1" }}
+    <div class="card-body text-center"><h3>Webhook</h3></div>
+    <pre><code class="language-json">{
+  "content": "[ @everyone ]",
+  "username": "Notify for {{ "{{ .Camera.Name }}" }}",
+  "avatar_url": "{{ "{{ .Camera.Avatar }}" }}",
+  "embeds": [
+    {
+      "title": "👉 Live stream",
+      "description": "Detected motion on camera {{ "{{ .Camera.Name }}" }}",
+      "color": 16725044,
+      "url": "{{ "{{ .Camera.Stream }}" }}",
+      "fields": [
+        {"name": "📸", "value": "{{ "{{ .Camera.Name }}" }}", "inline": true},
+        {"name": "📸", "value": "{{ "{{ .Camera.ID }}" }}", "inline": true}
+      ],
+      "author": {
+        "name": "{{ "{{ .Camera.Name }}" }} / {{ "{{ .Camera.ID }}" }}",
+        "icon_url": "{{ "{{ .Camera.Avatar }}" }}"
+      }
+    }
+  ]
+}</code></pre>
+
+    <div class="card-body text-center"><h3>POST /call</h3></div>
+    <pre><code class="language-json">{
+    "Camera": {
+        "ID": 1,
+        "Name": "Attic Camera",
+        "Avatar": "https://image.com/camera.png",
+        "Stream": "http://192.168.0.5:80"
+    }
+}</code></pre>
+    <div class="card-body text-center"><h3>Output</h3></div>
+    <img src="/static/img/exo2.png" width="100%" alt="example">
+{{ end }}
+
+{{ define "example-2" }}
+    <div class="card-body text-center"><h3>Webhook</h3></div>
+    <pre><code class="language-json">{
+      "content": "[ @everyone ]\n\n
+    **My favorite musicians:**\n
+    {{ "{{ if .Musicians }}" }}
+      ```markdown\n
+      {{ "{{ range .Musicians }}" }}
+        * {{ "{{ . }}" }}\n
+      {{ "{{ end }}" }}
+      ```\n
+    {{ "{{ else }}" }}
+      I don't have any favorite musicians 🙃
+    {{ "{{ end }}" }}"
+}</code></pre>
+
+    <div class="card-body text-center"><h3>POST /call</h3></div>
+    <pre><code class="language-json">{
+    "Musicians": [
+        "Lil Dicky",
+        "Fanta Vier",
+        "Audio88",
+        "Gorillaz",
+        "grandson"
+    ]
+}</code></pre>
+
+    <div class="card-body text-center"><h3>Output</h3></div>
+    <img src="/static/img/exo1.png" width="100%" alt="example">
+{{ end }}
