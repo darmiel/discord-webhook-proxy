@@ -1,4 +1,18 @@
-# Discord Webhook Proxy
+![Build](https://github.com/darmiel/discord-webhook-proxy/workflows/Build/badge.svg)
+
+# Discord Webhook Proxy<img src="./web/static/img/discord.png" align="right" width=200 height=200>
+
+---
+
+## ToC
+- [ToC](#toc)
+- [Okay, so here's the thing:](#okay-so-heres-the-thing)
+- [Examples](#examples)
+  - [Placeholders](#placeholders)
+  - [List](#list)
+
+---
+
 ## Okay, so here's the thing:
 
 Many websites / services offer the ability to call webhooks on certain actions.  
