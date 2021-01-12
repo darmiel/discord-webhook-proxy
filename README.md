@@ -10,35 +10,78 @@ In the middle of this, however, it occurred to me that this isn't the first time
 
 For this, the JSON of the webhook is stored with placeholders, like {{ test }}, in a sqlite3 database, which will be replaced by the URL query parameters later and sent to the specified webhook:
 
-### Example webhook data
-webhook1:
+## Examples
+### Placeholders
+**Webhook**
 ```json
 {
-  "content": "Hey @everyone, this is a test! #{{ test }}",
-  "username": "Webhook",
+  "content": "[ @everyone ]",
+  "username": "Notify for {{ .Camera.Name }}",
+  "avatar_url": "{{ .Camera.Avatar }}",
   "embeds": [
     {
-      "title": "View test online!",
-      "description": "This is a description for test: {{ test }}",
-      "url": "https://test.com",
-      "color": 3971831,
+      "title": "👉 Live stream",
+      "description": "Detected motion on camera {{ .Camera.Name }}",
+      "color": 16725044,
+      "url": "{{ .Camera.Stream }}",
       "fields": [
-        {
-          "name": "Test",
-          "value": "{{ test }}",
-          "inline": true
-        }
+        {"name": "📸", "value": "{{ .Camera.Name }}", "inline": true},
+        {"name": "📸", "value": "{{ .Camera.ID }}", "inline": true}
       ],
       "author": {
-        "name": "Webhook",
-        "icon_url": "https://image.com/test.png"
+        "name": "{{ .Camera.Name }} / {{ .Camera.ID }}",
+        "icon_url": "{{ .Camera.Avatar }}"
       }
     }
   ]
 }
 ```
-If you now send a request to:  
-https://my-service.com/webhook/webhook1/{webhook_url}/?test=abc  
-It will replace the placeholders "test" `{{ test }}` with "abc" and then send the webhook `{webhook_url}`.
 
-The placeholders will be determined by **URL query parameters**, or by **POST application/json, application/x-www-form-urlencoded**
+**POST /call**
+```
+{
+    "Camera": {
+        "ID": 1,
+        "Name": "Attic Camera",
+        "Avatar": "https://image.com/camera.png",
+        "Stream": "http://192.168.0.5:80"
+    }
+}
+```
+
+**Output**  
+![img](web/static/img/exo2.png)
+
+### List
+**Webhook**
+```json
+{
+      "content": "[ @everyone ]\n\n
+    **My favorite musicians:**\n
+    {{ if .Musicians }}
+      ```markdown\n
+      {{ range .Musicians }}
+        * {{ . }}\n
+      {{ end }}
+      ```\n
+    {{ else }}
+      I don't have any favorite musicians 🙃
+    {{ end }}"
+}
+```
+
+**POST /call**
+```json
+{
+    "Musicians": [
+        "Lil Dicky",
+        "Fanta Vier",
+        "Audio88",
+        "Gorillaz",
+        "grandson"
+    ]
+}
+```
+
+**Output**  
+![img](/web/static/img/exo1.png)
