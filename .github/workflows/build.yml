@@ -1,0 +1,32 @@
+name: Build
+
+on:
+  - push
+  - pull_request
+
+jobs:
+  build:
+    name: Build
+
+    strategy:
+      fail-fast: false
+      matrix:
+        go-version: [ 1.15.x ]
+        os: [ ubuntu-latest, macos-latest, windows-latest ]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Install Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: ${{ matrix.go-version }}
+
+      - name: '👉 Checkout code'
+        uses: actions/checkout@v2
+
+      - name: '🦾 Install dependencies'
+        run: go get .
+
+      - name: '🏗 Build'
+        run: go build .
