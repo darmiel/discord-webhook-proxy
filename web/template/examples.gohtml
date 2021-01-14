@@ -34,7 +34,7 @@
     </section>
 
     <div class="pt-5 mb-4" id="features">
-        <div class="container-lg card-columns">
+        <div class="container card-columns">
             <div class="card featureCard">
                 <div class="card-body text-center">
                     <h5 class="card-title">Placeholders</h5>
@@ -49,6 +49,14 @@
                 </div>
 
                 {{ template "example-2" }}
+            </div>
+
+            <div class="card featureCard">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Dynamic Fields</h5>
+                </div>
+
+                {{ template "example-3" }}
             </div>
         </div>
     </div>
@@ -89,7 +97,7 @@
     }
 }</code></pre>
     <div class="card-body text-center"><h3>Output</h3></div>
-    <img src="/static/img/exo2.png" width="100%" alt="example">
+    <img src="/static/img/exo2.png" width="100%" alt="example1">
 {{ end }}
 
 {{ define "example-2" }}
@@ -120,5 +128,60 @@
 }</code></pre>
 
     <div class="card-body text-center"><h3>Output</h3></div>
-    <img src="/static/img/exo1.png" width="100%" alt="example">
+    <img src="/static/img/exo1.png" width="100%" alt="example2">
+{{ end }}
+
+{{ define "example-3" }}
+    <div class="card-body text-center"><h3>Webhook</h3></div>
+    <pre><code class="language-json">{{ "{{ define \"fields\" }}" }}
+    {{ "{{ range $k, $v := . }}" }}
+        {{ "{{- if $k }}" }}
+            {{ "{{- \",\" -}}" }}
+        {{ "{{ end }}" }}
+        {
+            "name": "{{ "{{ $v.Name }}" }}",
+            "value": "{{ "{{ $v.Value }}" }}",
+            "inline": true
+        }
+    {{ "{{ end }}" }}
+{{ "{{ end }}" }}
+
+{
+    "content": "Hello, {{ "{{ .User }}" }}!",
+    "embeds": [
+        {
+            "title": "Embed Title",
+            "color": 16725044,
+            "fields": [
+                {{ "{{ template \"fields\" .F }}" }}
+            ]
+        }
+    ]
+}</code></pre>
+
+    <div class="card-body text-center"><h3>POST /call</h3></div>
+    <pre><code class="language-json">{
+  "User": "Me",
+  "M": [
+    {
+      "Name": "Name 1",
+      "Value": "Value 1"
+    },
+    {
+      "Name": "Name 2",
+      "Value": "Value 2"
+    },
+    {
+      "Name": "Name 3",
+      "Value": "Value 3"
+    },
+    {
+      "Name": "Name 4",
+      "Value": "Value 4"
+    }
+  ]
+}</code></pre>
+
+    <div class="card-body text-center"><h3>Output</h3></div>
+    <img src="/static/img/exo3.png" width="100%" alt="example3">
 {{ end }}

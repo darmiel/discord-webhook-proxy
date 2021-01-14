@@ -93,7 +93,7 @@ h2 {
 
 .featureCard {
     display: inline-block;
-    width: calc(50% - 40px);
+    width: calc(35% - 30px);
     margin: 10px;
     border: 0;
     background: #F6F6F6;

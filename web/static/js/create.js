@@ -4,17 +4,11 @@ const ise = document.getElementById("ise");
 
 const payload = document.getElementById("payload");
 
-
-// .Camera.Vendor.Model
-// -> ["model"] = abc
-// a["Camera"]["Vendor"]["Model"] = abc
-
-function updateSyntax(def) {
+function updateSyntax() {
     const text = payload.value;
-    const re = /\{\{(.*?)\}\}/gm;
+    const re = /{{(.*?)}}/gm;
 
     const placeholders = [];
-    const a = [];
 
     // update <li>
     iulph.innerHTML = "";
