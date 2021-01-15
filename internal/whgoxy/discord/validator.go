@@ -20,10 +20,13 @@ var (
 	errorUnknownWebhookURL  = errors.New("unknown webhook url")
 	errorDataTooShort       = errors.New("data too short")
 	errorDataTooLong        = errors.New("data too long")
+	errorInvalidUID         = errors.New("invalid uid")
 )
 
 var (
 	discordURLRegex *regexp.Regexp
+	UIDExpr         = "^[a-zA-Z0-9_-]{1,36}$"
+	uidRegex        *regexp.Regexp
 )
 
 func init() {
@@ -33,10 +36,15 @@ func init() {
 		log.Fatalln("Error compiling regex expression:", err)
 		return
 	}
+	uidRegex, err = regexp.Compile(UIDExpr)
+	if err != nil {
+		log.Fatalln("Error compiling UID expression:", err)
+		return
+	}
 	log.Println("Compiled regex:", discordURLRegex)
 }
 
-func (w *Webhook) CheckValidity(sendTest bool) (err error) {
+func (w *Webhook) CheckValidity() (err error) {
 	// check webhook length
 	l := len(w.WebhookURL)
 	if l < webhookURLMinLen {
@@ -63,12 +71,27 @@ func (w *Webhook) CheckValidity(sendTest bool) (err error) {
 		}
 	}
 
-	// make a test call to discord
-	if sendTest {
-		if _, err := w.Send(map[string]string{}); err != nil {
-			return err
-		}
+	return nil
+}
+
+func (w *Webhook) CheckValidityWithSend(testData interface{}) (req string, err error) {
+	// check validity
+	if err := w.CheckValidity(); err != nil {
+		return "", err
 	}
 
+	if testData == nil {
+		testData = make(map[string]interface{})
+	}
+
+	req, err = w.Send(testData)
+
+	return
+}
+
+func CheckUIDValidity(uid string) (err error) {
+	if !uidRegex.Match([]byte(uid)) {
+		return errorInvalidUID
+	}
 	return nil
 }

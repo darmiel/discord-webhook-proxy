@@ -22,12 +22,12 @@ type WebhookStats struct {
 }
 
 type Webhook struct {
-	UID        string       `bson:"uid"`
-	UserID     string       `bson:"user_id"`
-	Secret     string       `bson:"secret"`
-	WebhookURL string       `bson:"webhook_url"`
-	Data       WebhookData  `bson:"data"`
-	Stats      WebhookStats `bson:"stats"`
+	UID        string       `bson:"uid" json:"uid"`
+	UserID     string       `bson:"user_id" json:"user_id"`
+	Secret     string       `bson:"secret" json:"secret"`
+	WebhookURL string       `bson:"webhook_url" json:"webhook_url"`
+	Data       WebhookData  `bson:"data" json:"data"`
+	Stats      WebhookStats `bson:"stats" json:"stats"`
 }
 
 // NewWebhook creates a new webhook and generates a secret and a UID
@@ -109,6 +109,7 @@ func (w *Webhook) Send(param ...interface{}) (sentJson string, err error) {
 }
 
 func (w *Webhook) sendJson(jsd string) (sentJson string, err error) {
+	sentJson = jsd
 	reader := bytes.NewReader([]byte(jsd))
 
 	var req *http.Request
@@ -123,7 +124,7 @@ func (w *Webhook) sendJson(jsd string) (sentJson string, err error) {
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		return "", err
+		return jsd, err
 	}
 
 	s := math.Floor(float64(resp.StatusCode) / 100)

@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"strings"
 )
 
 type CreateWebhookPayload struct {
@@ -16,6 +17,12 @@ type CreateWebhookPayload struct {
 	Secret     string `json:"secret"`
 	WebhookURL string `json:"webhook_url"`
 	Payload    string `json:"payload"`
+	Args       string `json:"args"`
+}
+
+type CreateWebhookResponse struct {
+	Webhook  *discord.Webhook `json:"webhook"`
+	SentJson string           `json:"sent_json"`
 }
 
 func (ws *WebServer) createWebhookRouteHandler(w http.ResponseWriter, r *http.Request) {
@@ -43,10 +50,29 @@ func (ws *WebServer) createWebhookRouteHandler(w http.ResponseWriter, r *http.Re
 		return
 	}
 
+	// read args
+	var args interface{}
+	if data.Args != "" {
+		log.Println("😨 Data has args!")
+		if strings.HasPrefix(data.Args, "{") && strings.HasSuffix(data.Args, "}") {
+			if err := json.Unmarshal([]byte(data.Args), &args); err != nil {
+				w.WriteHeader(400)
+				_, _ = fmt.Fprintf(w, "Error: Example data could not be decoded")
+				return
+			}
+		} else {
+			w.WriteHeader(400)
+			_, _ = fmt.Fprintf(w, "Error: Example data must be in JSON format")
+			return
+		}
+	} else {
+		args = nil
+	}
+
 	// check if the users are the same
 	if data.UserID != user.DiscordUser.UserID {
 		w.WriteHeader(400)
-		_, _ = fmt.Fprintf(w, "Error (Request): UserID mismatch (%v <-> %v)",
+		_, _ = fmt.Fprintf(w, "UserID mismatch (%v <-> %v)",
 			data.UserID,
 			user.DiscordUser.UserID,
 		)
@@ -57,10 +83,20 @@ func (ws *WebServer) createWebhookRouteHandler(w http.ResponseWriter, r *http.Re
 	db := ws.Database
 
 	// check if webhook already exists
-	if _, err := db.FindWebhook(data.UID, user.DiscordUser.UserID); err == nil {
-		w.WriteHeader(400)
-		_, _ = fmt.Fprintf(w, "Error (Webhook): A webhook with the same UID already exists: %s", data.UID)
-		return
+	if data.UID != "" {
+		// check validity of uid
+		if err := discord.CheckUIDValidity(data.UID); err != nil {
+			w.WriteHeader(400)
+			_, _ = fmt.Fprintf(w, "The UID is invalid. Expression: %s", discord.UIDExpr)
+			return
+		}
+
+		// check for duplicates
+		if _, err := db.FindWebhook(data.UID, user.DiscordUser.UserID); err == nil {
+			w.WriteHeader(400)
+			_, _ = fmt.Fprintf(w, "A webhook with the same UID already exists: %s", data.UID)
+			return
+		}
 	}
 
 	// create webhook
@@ -73,10 +109,10 @@ func (ws *WebServer) createWebhookRouteHandler(w http.ResponseWriter, r *http.Re
 	)
 
 	// validate webhook
-	err = webhook.CheckValidity(true)
+	req, err := webhook.CheckValidityWithSend(args)
 	if err != nil {
 		w.WriteHeader(400)
-		_, _ = fmt.Fprintf(w, "Error (Webhook): Webhook is not vaid: %s", err.Error())
+		_, _ = fmt.Fprintf(w, "Webhook is not valid: %s | Sent Json: %s", err.Error(), req)
 		return
 	}
 
@@ -85,14 +121,20 @@ func (ws *WebServer) createWebhookRouteHandler(w http.ResponseWriter, r *http.Re
 
 	if err := db.SaveWebhook(webhook); err != nil {
 		w.WriteHeader(400)
-		_, _ = fmt.Fprintf(w, "Error (Webhook): Webhook is vaid, but could not store in database: %s", err.Error())
+		_, _ = fmt.Fprintf(w, "Webhook is vaid, but could not be saved due to a database error: %s", err.Error())
 		return
 	}
 
 	w.WriteHeader(200)
 
+	// create response
+	response := &CreateWebhookResponse{
+		Webhook:  webhook,
+		SentJson: req,
+	}
+
 	// marshall webook
-	if js, err := json.Marshal(webhook); err != nil {
+	if js, err := json.Marshal(response); err != nil {
 		_, _ = fmt.Fprintf(w, "{}")
 	} else {
 		_, _ = fmt.Fprintf(w, string(js))
