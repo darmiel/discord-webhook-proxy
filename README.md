@@ -25,6 +25,64 @@ In the middle of this, however, it occurred to me that this isn't the first time
 For this, the JSON of the webhook is stored with placeholders, like {{ test }}, in a sqlite3 database, which will be replaced by the URL query parameters later and sent to the specified webhook:
 
 ## Examples
+### Dynamic Fields
+**Webhook**
+```json
+{{ define "fields" }}
+    {{ range $k, $v := . }}
+        {{- if $k }}
+            {{- "," -}}
+        {{ end }}
+        {
+            "name": "{{ $v.Name }}",
+            "value": "{{ $v.Value }}",
+            "inline": true
+        }
+    {{ end }}
+{{ end }}
+
+{
+    "content": "Hello, {{ .User }}!",
+    "embeds": [
+        {
+            "title": "Embed Title",
+            "color": 16725044,
+            "fields": [
+                {{ template "fields" .F }}
+            ]
+        }
+    ]
+}
+```
+
+**POST /call/json**
+```json
+{
+  "User": "Me",
+  "M": [
+    {
+      "Name": "Name 1",
+      "Value": "Value 1"
+    },
+    {
+      "Name": "Name 2",
+      "Value": "Value 2"
+    },
+    {
+      "Name": "Name 3",
+      "Value": "Value 3"
+    },
+    {
+      "Name": "Name 4",
+      "Value": "Value 4"
+    }
+  ]
+}
+```
+
+**Output**  
+![img](web/static/img/exo3.png)
+
 ### Placeholders
 **Webhook**
 ```json
@@ -51,7 +109,7 @@ For this, the JSON of the webhook is stored with placeholders, like {{ test }}, 
 }
 ```
 
-**POST /call**
+**POST /call/json**
 ```
 {
     "Camera": {
@@ -84,7 +142,7 @@ For this, the JSON of the webhook is stored with placeholders, like {{ test }}, 
 }
 ```
 
-**POST /call**
+**POST /call/json**
 ```json
 {
     "Musicians": [
