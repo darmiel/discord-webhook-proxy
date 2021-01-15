@@ -27,7 +27,7 @@ For this, the JSON of the webhook is stored with placeholders, like {{ test }}, 
 ## Examples
 ### Dynamic Fields
 **Webhook**
-```json
+```
 {{ define "fields" }}
     {{ range $k, $v := . }}
         {{- if $k }}
