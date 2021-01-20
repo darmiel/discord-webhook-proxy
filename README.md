@@ -1,4 +1,5 @@
 ![Build](https://github.com/darmiel/discord-webhook-proxy/workflows/Build/badge.svg)
+[![Go Report Card](https://goreportcard.com/badge/github.com/darmiel/discord-webhook-proxy)](https://goreportcard.com/report/github.com/darmiel/discord-webhook-proxy)
 
 # Discord Webhook Proxy<img src="./web/static/img/discord.png" align="right" width=200 height=200>
 
