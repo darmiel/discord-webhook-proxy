@@ -63,6 +63,7 @@ func (ws *WebServer) updateRoutes() {
 		{"/call/json/{userid}/{uid}/{secret}", ws.jsonWebhookRouteHandler},
 
 		// dashboard
+		{"/dashboard", ws.dashboardHandler},
 		{"/dashboard/create", ws.createRouteHandler},
 	}
 

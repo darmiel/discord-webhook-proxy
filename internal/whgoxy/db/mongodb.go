@@ -24,6 +24,8 @@ type Database interface {
 	// returns the webhook if found, otherwise an error if anything went wrong.
 	FindWebhookWithSecret(uid string, userID string, secret string) (w *discord.Webhook, err error)
 
+	FindWebhooks(userID string) (w []*discord.Webhook, err error)
+
 	Disconnect() (err error)
 }
 
@@ -57,7 +59,7 @@ func (mdb *MongoDatabase) FindWebhook(uid string, userID string) (w *discord.Web
 
 // FindWebhookWithSecret ...
 func (mdb *MongoDatabase) FindWebhookWithSecret(uid string, userID string, secret string) (w *discord.Webhook, err error) {
-	filter := (&discord.Webhook{UserID: userID, UID: uid}).CreateFilter(true)
+	filter := (&discord.Webhook{UserID: userID, UID: uid, Secret: secret}).CreateFilter(true)
 	w, err = mdb.findWebhookWithFilter(filter)
 	return w, err
 }
@@ -67,6 +69,28 @@ func (mdb *MongoDatabase) Disconnect() (err error) {
 		log.Fatalln("Error while disconnecting:", err.Error())
 	}
 	return nil
+}
+
+func (mdb *MongoDatabase) FindWebhooks(userID string) (w []*discord.Webhook, err error) {
+	filter := bson.M{
+		"user_id": userID,
+	}
+
+	res, err := mdb.collection().Find(mdb.context, filter, options.Find())
+	if err != nil {
+		return nil, err
+	}
+
+	for res.Next(mdb.context) {
+		var webhook *discord.Webhook
+		if err := res.Decode(&webhook); err != nil {
+			return nil, err
+		}
+
+		w = append(w, webhook)
+	}
+
+	return w, nil
 }
 
 func NewMongoDatabase(client *mongo.Client, context context.Context, database string) (db Database) {
