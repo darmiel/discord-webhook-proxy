@@ -1,0 +1,32 @@
+{{ define "webhook_elem" }}
+    <div class="webhook">
+        <div class="container p-3">
+            <!-- Row 1 -->
+            <div class="row">
+                <div class="col-md-10">
+                    <h3 class="headerId">{{ .UID }}</h3>
+                </div>
+                <div class="col-md-2">
+                    <button class="whbtn editbtn">Edit</button>
+                </div>
+            </div>
+
+            <!-- Row 2 -->
+            <div class="row">
+                <div class="col-md-10">
+                    <label for="secrettxt">Secret:</label>
+                    <input
+                            id="secrettxt"
+                            type="text"
+                            class="secret"
+                            value="{{ .Secret }}"
+                    />
+                </div>
+                <div class="col-md-2">
+                    <a href="#" class="text-center deletebtn">Delete</a>
+                    <button class="whbtn copybtn">Copy URL</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{{ end }}

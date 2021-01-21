@@ -1,45 +1,35 @@
-{{ define "customCSS" }}
-{{ end }}
+<!-- Attr -->
+{{ define "customCSS" }}{{ end }}
+{{ define "title" }}whgoxy - Dashboard{{ end }}
 
-{{ define "title" }}
-    whgoxy - Dashboard
-{{ end }}
+<!-- Webhook -->
 
+<!-- Content -->
 {{ define "content" }}
+    <link rel="stylesheet" href="/static/dashboard.css">
     <!-- Start Content -->
     <section id="welcome">
         <div class="container py-5">
             <div class="row">
                 <div class="col-md-6" id="sectionLeft">
                     <h1 class="text-blurple text-right">Dashboard</h1>
-                    <h2 class="text-light my-5">
-                        List / View your webhooks
-                    </h2>
                 </div>
-            </div>
-            {{ if .Error }}
-                <div class="col-md-6" id="sectionLeft">
-                    <h1 class="text-blurple text-right">Error:</h1>
-                    <h2 class="text-light my-5">
-                        {{ .Error }}
-                    </h2>
-                </div>
-            {{ else }}
-                {{ if .Webhooks }}
-                    {{ range .Webhooks }}
-                        <div class="webhook text-light">
-                            <h2 class="text-blurple">Webhook:</h2>
-                            <ul>
-                                <li><strong>UID:</strong> {{ .UID }}</li>
-                                <li><strong>UserID:</strong> {{ .UserID }}</li>
-                                <li><strong>Secret:</strong> {{ .Secret }}</li>
-                                <li><strong>WebhookURL:</strong> {{ .WebhookURL }}</li>
-                            </ul>
-                        </div>
-                    {{ end }}
-                {{ else }}
-                    No webhooks found :( <a href="/dashboard/create">Create!</a>
+                {{ if .Error }}
+                    <div class="col-md-6">
+                        <h2 class="text-light my-5">
+                            {{ .Error }}
+                        </h2>
+                    </div>
                 {{ end }}
+            </div>
+
+            {{ if .Webhooks }}
+                {{ range .Webhooks }}
+                    {{ template "webhook_elem" . }}
+                    <br>
+                {{ end }}
+            {{ else }}
+                No webhooks found :( <a href="/dashboard/create">Create!</a>
             {{ end }}
         </div>
     </section>
