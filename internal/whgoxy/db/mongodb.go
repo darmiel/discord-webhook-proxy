@@ -26,6 +26,8 @@ type Database interface {
 
 	FindWebhooks(userID string) (w []*discord.Webhook, err error)
 
+	DeleteWebhook(uid string, userID string) (err error)
+
 	Disconnect() (err error)
 }
 
@@ -91,6 +93,16 @@ func (mdb *MongoDatabase) FindWebhooks(userID string) (w []*discord.Webhook, err
 	}
 
 	return w, nil
+}
+
+func (mdb *MongoDatabase) DeleteWebhook(uid string, userID string) (err error) {
+	filter := bson.M{
+		"user_id": userID,
+		"uid":     uid,
+	}
+
+	_, err = mdb.collection().DeleteOne(mdb.context, filter)
+	return
 }
 
 func NewMongoDatabase(client *mongo.Client, context context.Context, database string) (db Database) {

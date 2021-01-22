@@ -21,12 +21,15 @@ var (
 	errorDataTooShort       = errors.New("data too short")
 	errorDataTooLong        = errors.New("data too long")
 	errorInvalidUID         = errors.New("invalid uid")
+	errorInvalidUserID      = errors.New("invalid userid")
 )
 
 var (
 	discordURLRegex *regexp.Regexp
 	UIDExpr         = "^[a-zA-Z0-9_-]{1,36}$"
 	uidRegex        *regexp.Regexp
+	UserIDExpr      = "^[0-9]{18}$"
+	userIDRegex     *regexp.Regexp
 )
 
 func init() {
@@ -39,6 +42,11 @@ func init() {
 	uidRegex, err = regexp.Compile(UIDExpr)
 	if err != nil {
 		log.Fatalln("Error compiling UID expression:", err)
+		return
+	}
+	userIDRegex, err = regexp.Compile(UserIDExpr)
+	if err != nil {
+		log.Fatalln("Error compiling UserID expression:", err)
 		return
 	}
 	log.Println("Compiled regex:", discordURLRegex)
@@ -92,6 +100,13 @@ func (w *Webhook) CheckValidityWithSend(testData interface{}) (req string, err e
 func CheckUIDValidity(uid string) (err error) {
 	if !uidRegex.Match([]byte(uid)) {
 		return errorInvalidUID
+	}
+	return nil
+}
+
+func CheckUserIDValidity(userID string) (err error) {
+	if !userIDRegex.Match([]byte(userID)) {
+		return errorInvalidUserID
 	}
 	return nil
 }

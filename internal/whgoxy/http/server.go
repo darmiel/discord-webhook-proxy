@@ -57,7 +57,7 @@ func (ws *WebServer) updateRoutes() {
 
 		// "api"
 		{"/dashboard/create/req", ws.createWebhookRouteHandler},
-		// {"/call/{user_id}/{uid}/{secret}", ws.safeWebhookRouteHandler},
+		{"/dashboard/delete", ws.deleteWebhookRouteHandler},
 
 		// "other"
 		{"/call/json/{userid}/{uid}/{secret}", ws.jsonWebhookRouteHandler},
