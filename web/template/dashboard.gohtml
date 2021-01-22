@@ -2,8 +2,6 @@
 {{ define "customCSS" }}{{ end }}
 {{ define "title" }}whgoxy - Dashboard{{ end }}
 
-<!-- Webhook -->
-
 <!-- Content -->
 {{ define "content" }}
     <link rel="stylesheet" href="/static/dashboard.css">
@@ -33,4 +31,57 @@
             {{ end }}
         </div>
     </section>
+
+    {{ template "webhook_scripts" . }}
+{{ end }}
+
+{{ define "webhook_scripts" }}
+    <script>
+    function deleteWebhook(uid) {
+        // user id
+        const userId = "{{ .User.UserID }}";
+
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this webhook!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: '🗑',
+
+            showLoaderOnConfirm: true,
+
+            preConfirm: () => {
+                $.ajax({
+                    url: "/dashboard/delete",
+                    method: "POST",
+                    data: JSON.stringify({
+                        "user_id": userId,
+                        "uid": uid
+                    }),
+                    dataType: "json",
+                    success: () => {
+                        Swal.fire({
+                            icon: "success",
+                            title: "Webhook deleted!",
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                window.location.reload();
+                            }
+                        });
+                    },
+                    error: (data) => {
+                        const r = $.parseJSON(data.responseText);
+                        Swal.fire({
+                            icon: "error",
+                            title: "Error",
+                            text: r.error
+                        });
+                    }
+                });
+            },
+        });
+    }
+    </script>
 {{ end }}

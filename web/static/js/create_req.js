@@ -48,16 +48,12 @@ form.on("submit", (event) => {
             showLoaderOnConfirm: true,
             preConfirm: async (args) => {
                 lastData = args;
-                console.log("Args:", args);
 
                 // create payload
                 const p = data.serializeFormJSON();
-                console.log("p before:", p);
                 p["args"] = args; // append example args
-                console.log("p after:", p);
 
                 const json = JSON.stringify(p);
-                console.log("Json Payload:", json);
 
                 const f = await fetch(api, {
                     method: "POST",

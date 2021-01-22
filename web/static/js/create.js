@@ -18,8 +18,6 @@ function updateSyntax() {
         if (m) {
             const ph = m[1].trim();
 
-            console.log(ph, "in", placeholders, "=", ph in placeholders, placeholders.includes(ph));
-
             if (!placeholders.includes(ph)) {
                 placeholders.push(ph);
 

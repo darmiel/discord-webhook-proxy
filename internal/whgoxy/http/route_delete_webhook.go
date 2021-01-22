@@ -22,8 +22,7 @@ type DeleteWebhookResponse struct {
 }
 
 func killReq(writer http.ResponseWriter, data interface{}) {
-	// write error header
-	writer.WriteHeader(400)
+	var header = 400 // error
 
 	switch t := data.(type) {
 	case error:
@@ -31,7 +30,15 @@ func killReq(writer http.ResponseWriter, data interface{}) {
 			Succes: false,
 			Error:  t.Error(),
 		}
+		break
+	case DeleteWebhookResponse:
+		if t.Succes {
+			header = 200
+		}
 	}
+
+	// write (error) header
+	writer.WriteHeader(header)
 
 	// write error
 	if data, err := json.Marshal(data); err != nil {
