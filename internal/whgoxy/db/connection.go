@@ -4,10 +4,30 @@ import (
 	"context"
 	"fmt"
 	"github.com/darmiel/whgoxy/internal/whgoxy/config"
+	"github.com/darmiel/whgoxy/internal/whgoxy/discord"
+	"github.com/patrickmn/go-cache"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"log"
+	"time"
 )
+
+// Cache
+var webhookCache *cache.Cache
+var userWebhookCache *cache.Cache
+
+func init() {
+	webhookCache = cache.New(5*time.Minute, 10*time.Minute)
+	userWebhookCache = cache.New(5*time.Minute, 10*time.Minute)
+}
+func getCacheKeyManual(userID string, uid string) string {
+	return userID + ":" + uid
+}
+func getCacheKey(w *discord.Webhook) string {
+	return getCacheKeyManual(w.UserID, w.UID)
+}
+
+//
 
 func NewDatabase(options config.MongoConfig) (db Database, err error) {
 	log.Println("👉 Using mongo as database!")
