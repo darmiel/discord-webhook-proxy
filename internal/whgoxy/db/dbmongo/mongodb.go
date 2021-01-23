@@ -59,8 +59,6 @@ func NewDatabase(options config.MongoConfig) (db db.Database, err error) {
 		uri = BuildApplyURI(options.MongoAuthUser, options.MongoAuthPass, options.MongoHost, options.MongoDatabase)
 	}
 
-	log.Println("🤫", uri)
-
 	db, err = connect(uri, options.MongoDatabase)
 	if err != nil {
 		return nil, err

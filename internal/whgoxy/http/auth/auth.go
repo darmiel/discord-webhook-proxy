@@ -4,6 +4,7 @@ import (
 	"github.com/darmiel/whgoxy/internal/whgoxy/config"
 	"github.com/dchest/authcookie"
 	"github.com/gorilla/mux"
+	"github.com/patrickmn/go-cache"
 	"golang.org/x/oauth2"
 	"log"
 	"net/http"
@@ -11,8 +12,9 @@ import (
 )
 
 var (
-	authenticatedUsers = make(map[string]*User)
-	oauthConfig        *oauth2.Config
+	authUserCache = cache.New(12*time.Hour, 16*time.Hour)
+
+	oauthConfig *oauth2.Config
 
 	cookieSecret []byte
 	cookieName   string
@@ -50,29 +52,6 @@ func GetLoginCookie(r *http.Request) (value string, ok bool) {
 ///
 
 func GetUser(r *http.Request) (u *User, ok bool) {
-	// // debug user
-	// // TODO: Remove me later
-	// u = &User{
-	// 	DiscordUser: &discord.DiscordUser{
-	// 		UserID:        "150347348088848384",
-	// 		Username:      "d2a",
-	// 		Avatar:        "408d6f884febd122f5252e2fc6d93c2e",
-	// 		Discriminator: "1325",
-	// 		PublicFlags:   256,
-	// 		Flags:         256,
-	// 		Locale:        "en-US",
-	// 		MFAEnabled:    true,
-	// 	},
-	// 	Token: &oauth2.Token{
-	// 		AccessToken:  "",
-	// 		TokenType:    "",
-	// 		RefreshToken: "",
-	// 		Expiry:       time.Time{},
-	// 	},
-	// }
-	// ok = true
-	// return
-
 	// check if user sent a login cookie
 	value, ok := GetLoginCookie(r)
 	if !ok {
@@ -82,8 +61,15 @@ func GetUser(r *http.Request) (u *User, ok bool) {
 
 	// check if cookie is valid
 	if login := authcookie.Login(value, cookieSecret); login != "" {
-		u, ok = authenticatedUsers[login]
-		return u, ok
+		// get user from cache
+		var res interface{}
+		res, ok = authUserCache.Get(login)
+		// if found in cache: cast to user
+		if ok {
+			u, ok = res.(*User)
+		}
+
+		return
 	} else {
 		return nil, false
 	}
@@ -101,11 +87,12 @@ func GetUserOrDie(r *http.Request, w http.ResponseWriter) (u *User, die bool) {
 ///
 
 func LoginUser(w http.ResponseWriter, u *User) {
-	log.Println("Logging in user", u.DiscordUser.Username, "...")
+	dgu := u.DiscordUser
+	log.Println("👋 Logging in ", dgu.GetFullName(), "("+dgu.UserID+")", "...")
 
 	// generate cookie
 	cookie := authcookie.NewSinceNow(
-		u.DiscordUser.UserID,
+		dgu.UserID,
 		8*time.Hour,
 		cookieSecret,
 	)
@@ -117,17 +104,17 @@ func LoginUser(w http.ResponseWriter, u *User) {
 		Expires: time.Now().Add(8 * time.Hour),
 	})
 
-	// add to map
-	authenticatedUsers[u.DiscordUser.UserID] = u
+	// add to cache
+	authUserCache.Set(dgu.UserID, u, cache.DefaultExpiration)
 }
 
 func LogoutUser(w http.ResponseWriter, u *User) {
-	log.Println("Logging out user", u.DiscordUser.Username, "...")
+	log.Println("🚪 Logging out ", u.DiscordUser.GetFullName(), "("+u.DiscordUser.UserID+")", "...")
 
 	http.SetCookie(w, &http.Cookie{
 		Name:  cookieName,
 		Value: "",
 	})
 
-	delete(authenticatedUsers, u.DiscordUser.UserID)
+	authUserCache.Delete(u.DiscordUser.UserID)
 }

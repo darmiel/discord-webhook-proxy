@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"golang.org/x/oauth2"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"strconv"
 )
@@ -20,6 +19,10 @@ type DiscordUser struct {
 	Flags         int    `json:"flags"`
 	Locale        string `json:"locale"`
 	MFAEnabled    bool   `json:"mfa_enabled"`
+}
+
+func (u *DiscordUser) GetFullName() string {
+	return u.Username + "#" + u.Discriminator
 }
 
 func (u *DiscordUser) GetAvatarUrl() (url string) {
@@ -54,8 +57,6 @@ func NewUserByToken(token *oauth2.Token) (u *DiscordUser, err error) {
 	if err != nil {
 		return nil, err
 	}
-
-	log.Println("Response:", string(body))
 
 	u = &DiscordUser{}
 	if err := json.Unmarshal(body, &u); err != nil {

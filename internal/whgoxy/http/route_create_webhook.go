@@ -39,9 +39,6 @@ func (ws *WebServer) createWebhookRouteHandler(w http.ResponseWriter, r *http.Re
 		return
 	}
 
-	// print data
-	log.Println("Data:", string(all))
-
 	// "validate" json and create webhook data
 	var data CreateWebhookPayload
 	if err := json.Unmarshal(all, &data); err != nil {
