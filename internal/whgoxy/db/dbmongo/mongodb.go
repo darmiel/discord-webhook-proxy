@@ -1,35 +1,47 @@
-package db
+package dbmongo
 
 import (
 	"context"
 	"fmt"
 	"github.com/darmiel/whgoxy/internal/whgoxy/config"
-	"github.com/darmiel/whgoxy/internal/whgoxy/discord"
-	"github.com/patrickmn/go-cache"
+	"github.com/darmiel/whgoxy/internal/whgoxy/db"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"log"
-	"time"
 )
 
-// Cache
-var webhookCache *cache.Cache
-var userWebhookCache *cache.Cache
+const CollectionName string = "whgoxy"
 
-func init() {
-	webhookCache = cache.New(5*time.Minute, 10*time.Minute)
-	userWebhookCache = cache.New(5*time.Minute, 10*time.Minute)
-}
-func getCacheKeyManual(userID string, uid string) string {
-	return userID + ":" + uid
-}
-func getCacheKey(w *discord.Webhook) string {
-	return getCacheKeyManual(w.UserID, w.UID)
+/// Mongo Functions
+
+type MongoDatabase struct {
+	client   *mongo.Client
+	context  context.Context
+	database string
 }
 
-//
+func (mdb *MongoDatabase) collection() (collection *mongo.Collection) {
+	return mdb.client.Database(mdb.database).Collection(CollectionName)
+}
 
-func NewDatabase(options config.MongoConfig) (db Database, err error) {
+func (mdb *MongoDatabase) Disconnect() (err error) {
+	if err := mdb.client.Disconnect(mdb.context); err != nil {
+		log.Fatalln("Error while disconnecting:", err.Error())
+	}
+	return nil
+}
+
+func NewMongoDatabase(client *mongo.Client, context context.Context, database string) (db db.Database) {
+	return &MongoDatabase{
+		client:   client,
+		context:  context,
+		database: database,
+	}
+}
+
+///
+
+func NewDatabase(options config.MongoConfig) (db db.Database, err error) {
 	log.Println("👉 Using mongo as database!")
 
 	var uri string
@@ -48,7 +60,7 @@ func NewDatabase(options config.MongoConfig) (db Database, err error) {
 	return db, nil
 }
 
-func ConnectMongoDatabase(applyURI string, database string) (mdb Database, err error) {
+func ConnectMongoDatabase(applyURI string, database string) (mdb db.Database, err error) {
 	uri := options.Client().ApplyURI(applyURI)
 	client, err := mongo.NewClient(uri)
 	if err != nil {

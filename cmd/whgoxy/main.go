@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/darmiel/whgoxy/internal/whgoxy/config"
-	"github.com/darmiel/whgoxy/internal/whgoxy/db"
+	"github.com/darmiel/whgoxy/internal/whgoxy/db/dbmongo"
 	"github.com/darmiel/whgoxy/internal/whgoxy/http"
 	"github.com/darmiel/whgoxy/internal/whgoxy/http/auth"
 	"log"
@@ -16,7 +16,7 @@ func main() {
 	conf := config.Load()
 
 	// load database
-	database, err := db.NewDatabase(conf.Mongo)
+	database, err := dbmongo.NewDatabase(conf.Mongo)
 	if err != nil {
 		log.Fatalln("❌ Error connecting to database:", database)
 		return
