@@ -15,7 +15,7 @@ var (
 
 /// Webhook Query Functions
 
-func (mdb *MongoDatabase) findWebhookWithFilter(filter bson.M) (w *discord.Webhook, err error) {
+func (mdb *mongoDatabase) findWebhookWithFilter(filter bson.M) (w *discord.Webhook, err error) {
 	res := mdb.collection().FindOne(mdb.context, filter)
 	if res.Err() != nil {
 		return nil, res.Err()
@@ -31,9 +31,9 @@ func (mdb *MongoDatabase) findWebhookWithFilter(filter bson.M) (w *discord.Webho
 }
 
 // FindWebhook ...
-func (mdb *MongoDatabase) FindWebhook(uid string, userID string) (w *discord.Webhook, err error) {
+func (mdb *mongoDatabase) FindWebhook(uid string, userID string) (w *discord.Webhook, err error) {
 	// check cache
-	if w, found := db.WebhookCache.Get(db.GetCacheKey(w)); found {
+	if w, found := db.WebhookCache.Get(db.GetCacheKeyManual(userID, uid)); found {
 		return w.(*discord.Webhook), nil
 	}
 
@@ -43,7 +43,7 @@ func (mdb *MongoDatabase) FindWebhook(uid string, userID string) (w *discord.Web
 }
 
 // FindWebhookWithSecret ...
-func (mdb *MongoDatabase) FindWebhookWithSecret(uid string, userID string, secret string) (w *discord.Webhook, err error) {
+func (mdb *mongoDatabase) FindWebhookWithSecret(uid string, userID string, secret string) (w *discord.Webhook, err error) {
 	// check cache
 	if w, found := db.WebhookCache.Get(db.GetCacheKey(w)); found {
 		webhook := w.(*discord.Webhook)
@@ -60,7 +60,7 @@ func (mdb *MongoDatabase) FindWebhookWithSecret(uid string, userID string, secre
 }
 
 // FindWebhooks ...
-func (mdb *MongoDatabase) FindWebhooks(userID string) (w []*discord.Webhook, err error) {
+func (mdb *mongoDatabase) FindWebhooks(userID string) (w []*discord.Webhook, err error) {
 	// check cache
 	if w, found := db.UserWebhookCache.Get(userID); found {
 		return w.([]*discord.Webhook), nil

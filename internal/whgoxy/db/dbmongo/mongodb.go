@@ -14,32 +14,40 @@ const CollectionName string = "whgoxy"
 
 /// Mongo Functions
 
-type MongoDatabase struct {
+type mongoDatabase struct {
 	client   *mongo.Client
 	context  context.Context
 	database string
 }
 
-func (mdb *MongoDatabase) collection() (collection *mongo.Collection) {
+// collection returns the collection used for whgoxy
+func (mdb *mongoDatabase) collection() (collection *mongo.Collection) {
 	return mdb.client.Database(mdb.database).Collection(CollectionName)
 }
 
-func (mdb *MongoDatabase) Disconnect() (err error) {
+// Disconnect disconnects the mongo client and should be run at the end of the program
+func (mdb *mongoDatabase) Disconnect() (err error) {
 	if err := mdb.client.Disconnect(mdb.context); err != nil {
 		log.Fatalln("Error while disconnecting:", err.Error())
 	}
 	return nil
 }
 
-func NewMongoDatabase(client *mongo.Client, context context.Context, database string) (db db.Database) {
-	return &MongoDatabase{
-		client:   client,
-		context:  context,
-		database: database,
+func connect(applyURI string, database string) (mdb db.Database, err error) {
+	uri := options.Client().ApplyURI(applyURI)
+	client, err := mongo.NewClient(uri)
+	if err != nil {
+		return nil, err
 	}
-}
 
-///
+	ctx := context.TODO()
+	err = client.Connect(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return &mongoDatabase{client, ctx, database}, nil
+}
 
 func NewDatabase(options config.MongoConfig) (db db.Database, err error) {
 	log.Println("👉 Using mongo as database!")
@@ -53,27 +61,11 @@ func NewDatabase(options config.MongoConfig) (db db.Database, err error) {
 
 	log.Println("🤫", uri)
 
-	db, err = ConnectMongoDatabase(uri, options.MongoDatabase)
+	db, err = connect(uri, options.MongoDatabase)
 	if err != nil {
 		return nil, err
 	}
 	return db, nil
-}
-
-func ConnectMongoDatabase(applyURI string, database string) (mdb db.Database, err error) {
-	uri := options.Client().ApplyURI(applyURI)
-	client, err := mongo.NewClient(uri)
-	if err != nil {
-		return nil, err
-	}
-
-	ctx := context.TODO()
-	err = client.Connect(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	return NewMongoDatabase(client, ctx, database), nil
 }
 
 func BuildApplyURI(authUser string, authPass string, host string, database string) (res string) {

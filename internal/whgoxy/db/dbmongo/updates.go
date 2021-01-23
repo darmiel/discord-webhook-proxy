@@ -11,7 +11,7 @@ import (
 /// Webhook Update Functions
 
 // SaveWebhook ...
-func (mdb *MongoDatabase) SaveWebhook(w *discord.Webhook) (err error) {
+func (mdb *mongoDatabase) SaveWebhook(w *discord.Webhook) (err error) {
 	filter := w.CreateFilter(false)
 	update := bson.M{"$set": w}
 
@@ -30,7 +30,7 @@ func (mdb *MongoDatabase) SaveWebhook(w *discord.Webhook) (err error) {
 }
 
 // DeleteWebhook ...
-func (mdb *MongoDatabase) DeleteWebhook(uid string, userID string) (err error) {
+func (mdb *mongoDatabase) DeleteWebhook(uid string, userID string) (err error) {
 	// invalidate user cache
 	db.UserWebhookCache.Delete(userID)
 
