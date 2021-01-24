@@ -22,34 +22,46 @@ var (
 	errorDataTooLong        = errors.New("data too long")
 	errorInvalidUID         = errors.New("invalid uid")
 	errorInvalidUserID      = errors.New("invalid userid")
+	errorInvalidSecret      = errors.New("invalid secret")
+)
+
+const (
+	DiscordURLExpr = "https://((ptb|canary)\\.)?discord(app)?\\.com/api/webhooks/[0-9]+/[A-Za-z0-9-]+"
+	UIDExpr        = "^[a-zA-Z0-9_-]{1,36}$"
+	UserIDExpr     = "^[0-9]{18}$"
+	SecretExpr     = "^[A-Za-z0-9-_.]{6,64}$"
 )
 
 var (
-	discordURLRegex *regexp.Regexp
-	UIDExpr         = "^[a-zA-Z0-9_-]{1,36}$"
-	uidRegex        *regexp.Regexp
-	UserIDExpr      = "^[0-9]{18}$"
-	userIDRegex     *regexp.Regexp
+	DiscordURLRegex *regexp.Regexp
+	UIDRegex        *regexp.Regexp
+	UserIDRegex     *regexp.Regexp
+	SecretRegex     *regexp.Regexp
 )
 
 func init() {
 	var err error
-	discordURLRegex, err = regexp.Compile("https://((ptb|canary)\\.)?discord(app)?\\.com/api/webhooks/[0-9]+/[A-Za-z0-9-]+")
+	DiscordURLRegex, err = regexp.Compile(DiscordURLExpr)
 	if err != nil {
 		log.Fatalln("Error compiling regex expression:", err)
 		return
 	}
-	uidRegex, err = regexp.Compile(UIDExpr)
+	UIDRegex, err = regexp.Compile(UIDExpr)
 	if err != nil {
 		log.Fatalln("Error compiling UID expression:", err)
 		return
 	}
-	userIDRegex, err = regexp.Compile(UserIDExpr)
+	UserIDRegex, err = regexp.Compile(UserIDExpr)
 	if err != nil {
 		log.Fatalln("Error compiling UserID expression:", err)
 		return
 	}
-	log.Println("Compiled regex:", discordURLRegex)
+	SecretRegex, err = regexp.Compile(SecretExpr)
+	if err != nil {
+		log.Fatalln("Error compiling Secret expression:", err)
+		return
+	}
+	log.Println("Compiled regex:", DiscordURLRegex)
 }
 
 func (w *Webhook) CheckValidity() (err error) {
@@ -62,7 +74,7 @@ func (w *Webhook) CheckValidity() (err error) {
 	}
 
 	// check webhook url
-	if !discordURLRegex.Match([]byte(w.WebhookURL)) {
+	if !DiscordURLRegex.Match([]byte(w.WebhookURL)) {
 		return errorUnknownWebhookURL
 	}
 
@@ -98,15 +110,22 @@ func (w *Webhook) CheckValidityWithSend(testData interface{}) (req string, err e
 }
 
 func CheckUIDValidity(uid string) (err error) {
-	if !uidRegex.Match([]byte(uid)) {
+	if !UIDRegex.Match([]byte(uid)) {
 		return errorInvalidUID
 	}
 	return nil
 }
 
 func CheckUserIDValidity(userID string) (err error) {
-	if !userIDRegex.Match([]byte(userID)) {
+	if !UserIDRegex.Match([]byte(userID)) {
 		return errorInvalidUserID
+	}
+	return nil
+}
+
+func CheckSecretValidity(secret string) (err error) {
+	if !SecretRegex.Match([]byte(secret)) {
+		return errorInvalidSecret
 	}
 	return nil
 }

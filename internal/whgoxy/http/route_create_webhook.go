@@ -99,7 +99,6 @@ func (ws *WebServer) createWebhookRouteHandler(w http.ResponseWriter, r *http.Re
 					log.Println(wh.WebhookURL, "<->", data.WebhookURL)
 				}
 				if data.Secret != wh.Secret {
-					// TODO: check if empty
 					webhook.Secret = data.Secret
 					log.Println("✍️ Secret changed")
 					log.Println(wh.Secret, "<->", data.Secret)
@@ -109,6 +108,20 @@ func (ws *WebServer) createWebhookRouteHandler(w http.ResponseWriter, r *http.Re
 				_, _ = fmt.Fprintf(w, "A webhook with the same UID already exists: %s", data.UID)
 				return
 			}
+		}
+	}
+
+	if data.Secret != "" {
+		// check secret validity
+		if err := discord.CheckSecretValidity(data.Secret); err != nil {
+			w.WriteHeader(400)
+			_, _ = fmt.Fprint(w, "Secret is not valid")
+			return
+		}
+	} else {
+		// Generate new secret
+		if webhook != nil {
+			webhook.Secret = discord.GenerateSecret()
 		}
 	}
 
@@ -122,6 +135,8 @@ func (ws *WebServer) createWebhookRouteHandler(w http.ResponseWriter, r *http.Re
 			discord.WebhookData(data.Payload),
 		)
 	}
+
+	// check secret
 
 	// validate webhook
 	req, err := webhook.CheckValidityWithSend(args)

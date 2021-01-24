@@ -34,13 +34,6 @@
                     <input type="hidden" name="EditMode" value="">
                 {{ end }}
 
-                <!-- prefill secret -->
-                {{ if .Secret }}
-                    <input type="hidden" name="secret" value="{{ .Secret }}">
-                {{ else }}
-                    <input type="hidden" name="secret" value=""> <!-- "" = generate Secret -->
-                {{ end }}
-
                 <div class="col-md-12 md-3">
                     <label for="webhook_url" class="text-muted">Webhook-URL</label>
                     <!-- webhook_url -->
@@ -57,6 +50,8 @@
                     />
                 </div>
 
+                <br>
+
                 <div class="col-md-12 mb-3">
                     <!-- payload -->
                     <label for="payload" class="text-muted">Payload</label>
@@ -72,18 +67,38 @@
                     <small class="text-danger" style="display: none" id="ise">Syntax error.</small>
                 </div>
 
+                <!-- UID -->
                 <div class="md-3">
-                    <label for="uid" class="text-muted">UID (must be unique)</label>
+                    <label for="uid" class="text-muted">UID: must be unique</label>
                     <!-- uid -->
                     <input
                             type="text"
                             id="uid"
                             name="uid"
                             class="form-control bg-dark text-light blurple-border"
-                            placeholder="my-webhook0"
+                            placeholder="(( Generate ))"
                             {{ if .UID }}
                                 value="{{ .UID }}"
                                 readonly
+                            {{ end }}
+                            required
+                    />
+                </div>
+
+                <br>
+
+                <!-- Secret -->
+                <div class="md-3">
+                    <label for="secret" class="text-muted">Secret: 6 - 64 chars [^[A-Za-z0-9-_.]{6,64}$]</label>
+
+                    <input
+                            type="text"
+                            id="secret"
+                            name="secret"
+                            class="form-control bg-dark text-light blurple-border"
+                            placeholder="(( Generate ))"
+                            {{ if .Secret }}
+                                value="{{ .Secret }}"
                             {{ end }}
                             required
                     />

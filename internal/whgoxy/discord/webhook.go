@@ -26,7 +26,7 @@ func NewWebhook(userID string, uid string, webhookURL string, secret string, dat
 	}
 
 	if secret == "" {
-		secret = generateSecret()
+		secret = GenerateSecret()
 	}
 
 	return &Webhook{

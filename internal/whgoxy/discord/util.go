@@ -3,10 +3,10 @@ package discord
 import "math/rand"
 
 //goland:noinspection SpellCheckingInspection
-const SecretAvailableChars string = "ABCDEFGHKMNPQRSTUVXYZabcdefghmnpqrstuvwxyz023456789."
+const SecretAvailableChars string = "ABCDEFGHKMNPQRSTUVXYZabcdefghmnpqrstuvwxyz023456789._-"
 
-// generateSecret generates a 64 long string
-func generateSecret() (res string) {
+// GenerateSecret generates a 64 long string
+func GenerateSecret() (res string) {
 	var secret [64]byte
 
 	l := len(SecretAvailableChars)
