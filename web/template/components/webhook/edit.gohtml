@@ -1,32 +1,5 @@
-{{ define "customCSS" }}
-{{ end }}
-
-{{ define "title" }}
-    whgoxy - Create
-{{ end }}
-
-{{ define "content" }}
-    <!-- Start Content -->
-    <section id="welcome">
-        <div class="container py-5">
-            <div class="row">
-                <div class="col-md-6" id="sectionLeft">
-                    <h1 class="text-blurple text-right">Create</h1>
-                </div>
-            </div>
-
-            {{ template "form" . }}
-        </div>
-    </section>
-
-    <script src="/static/js/create.js"></script>
-    <script src="/static/js/create_req.js"></script>
-{{ end }}
-
-
-{{ define "form" }}
+{{ define "component_edit_webhook" }}
     <div class="row">
-
         <!-- Right -->
         <div class="col-md-4 order-md-2 mb-4">
             <h4 class="d-flex justify-content-between align-items-center mb-3">
@@ -38,7 +11,7 @@
                 <!-- Add me here -->
             </ul>
 
-            <form class="card p-2 bg-dark" id="createForm">
+            <form class="card p-2 bg-dark" id="webhookForm">
                 <button type="submit" class="btn btn-blurple">
                     Test & Save Webhook
                 </button>
@@ -48,13 +21,25 @@
         <!-- Left -->
         <div class="col-md-8 order-md-1">
             <h4 class="d-flex justify-content-between align-items-center mb-3">
-                <span class="text-muted">Create Webhook</span>
+                {{ if .UID }}
+                    <span class="text-muted">✍️ {{ .UID }}</span>
+                {{ else }}
+                    <span class="text-muted">👷 Create</span>
+                {{ end }}
             </h4>
 
-            <form id="createDataForm">
-                <!-- user_id -->
-                <input type="hidden" name="user_id" value="{{ .User.UserID }}">
-                <input type="hidden" name="secret" value=""> <!-- "" = generate Secret -->
+            <form id="webhookDataForm">
+                <!-- edit mode?! -->
+                {{ if .UID }}
+                    <input type="hidden" name="EditMode" value="">
+                {{ end }}
+
+                <!-- prefill secret -->
+                {{ if .Secret }}
+                    <input type="hidden" name="secret" value="{{ .Secret }}">
+                {{ else }}
+                    <input type="hidden" name="secret" value=""> <!-- "" = generate Secret -->
+                {{ end }}
 
                 <div class="col-md-12 md-3">
                     <label for="webhook_url" class="text-muted">Webhook-URL</label>
@@ -65,6 +50,9 @@
                             name="webhook_url"
                             class="form-control bg-dark text-light blurple-border"
                             placeholder="https://discord.com/api/webhooks/..."
+                            {{ if .WebhookURL }}
+                                value="{{ .WebhookURL }}"
+                            {{ end }}
                             required
                     />
                 </div>
@@ -79,27 +67,8 @@
                             placeholder=""
                             rows="20"
                             required
-                    >
-{
-  "content": "[ @everyone ]",
-  "username": "Notify for {{`{{ .Camera.Name }}`}}",
-  "avatar_url": "{{`{{ .Camera.Avatar }}`}}",
-  "embeds": [
-    {
-      "title": "👉 Live stream",
-      "description": "Detected motion on camera {{`{{ .Camera.Name }}`}}",
-      "color": 16725044,
-      "fields": [
-        {"name": "📸", "value": "{{`{{ .Camera.Name }}`}}", "inline": true},
-        {"name": "📸", "value": "{{`{{ .Camera.ID }}`}}", "inline": true}
-      ],
-      "author": {
-        "name": "{{`{{ .Camera.Name}}`}} / {{`{{ .Camera.ID }}`}}",
-        "icon_url": "{{`{{ .Camera.Avatar }}`}}"
-      }
-    }
-  ]
-}</textarea>
+                    >{{ if .Data }}{{ .Data }}{{ else }}{{ template "component_example_template" }}{{ end }}</textarea>
+
                     <small class="text-danger" style="display: none" id="ise">Syntax error.</small>
                 </div>
 
@@ -112,6 +81,10 @@
                             name="uid"
                             class="form-control bg-dark text-light blurple-border"
                             placeholder="my-webhook0"
+                            {{ if .UID }}
+                                value="{{ .UID }}"
+                                readonly
+                            {{ end }}
                             required
                     />
                 </div>
@@ -119,3 +92,24 @@
         </div>
     </div>
 {{ end }}
+
+{{ define "component_example_template" }}{{`{
+    "content": "[ @everyone ]",
+    "username": "Notify for {{ .Camera.Name }}",
+    "avatar_url": "{{ .Camera.Avatar }}",
+    "embeds": [
+        {
+            "title": "👉 Live stream",
+            "description": "Detected motion on camera {{ .Camera.Name }}",
+            "color": 16725044,
+            "fields": [
+                {"name": "📸", "value": "{{ .Camera.Name }}", "inline": true},
+                {"name": "📸", "value": "{{ .Camera.ID }}", "inline": true}
+            ],
+            "author": {
+                "name": "{{ .Camera.Name}}} / {{ .Camera.ID }}",
+                "icon_url": "{{ .Camera.Avatar }}"
+            }
+        }
+    ]
+}`}}{{ end }}

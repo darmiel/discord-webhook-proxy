@@ -13,11 +13,11 @@ import (
 
 type CreateWebhookPayload struct {
 	UID        string `json:"uid"`
-	UserID     string `json:"user_id"`
 	Secret     string `json:"secret"`
 	WebhookURL string `json:"webhook_url"`
 	Payload    string `json:"payload"`
 	Args       string `json:"args"`
+	Force      bool   `json:"force"`
 }
 
 type CreateWebhookResponse struct {
@@ -66,18 +66,10 @@ func (ws *WebServer) createWebhookRouteHandler(w http.ResponseWriter, r *http.Re
 		args = nil
 	}
 
-	// check if the users are the same
-	if data.UserID != user.DiscordUser.UserID {
-		w.WriteHeader(400)
-		_, _ = fmt.Fprintf(w, "UserID mismatch (%v <-> %v)",
-			data.UserID,
-			user.DiscordUser.UserID,
-		)
-		return
-	}
-
 	// get database connection
 	db := ws.Database
+
+	var webhook *discord.Webhook
 
 	// check if webhook already exists
 	if data.UID != "" {
@@ -89,21 +81,47 @@ func (ws *WebServer) createWebhookRouteHandler(w http.ResponseWriter, r *http.Re
 		}
 
 		// check for duplicates
-		if _, err := db.FindWebhook(data.UID, user.DiscordUser.UserID); err == nil {
-			w.WriteHeader(400)
-			_, _ = fmt.Fprintf(w, "A webhook with the same UID already exists: %s", data.UID)
-			return
+		if wh, err := db.FindWebhook(data.UID, user.DiscordUser.UserID); err == nil {
+
+			// check if forced request
+			if data.Force {
+				webhook = wh
+
+				// update webhook
+				if data.Payload != string(wh.Data) {
+					webhook.Data = discord.WebhookData(data.Payload)
+					log.Println("✍️ Data changed")
+					log.Println(wh.Data, "<->", data.Payload)
+				}
+				if data.WebhookURL != wh.WebhookURL {
+					webhook.WebhookURL = data.WebhookURL
+					log.Println("✍️ Webhook url")
+					log.Println(wh.WebhookURL, "<->", data.WebhookURL)
+				}
+				if data.Secret != wh.Secret {
+					// TODO: check if empty
+					webhook.Secret = data.Secret
+					log.Println("✍️ Secret changed")
+					log.Println(wh.Secret, "<->", data.Secret)
+				}
+			} else {
+				w.WriteHeader(300)
+				_, _ = fmt.Fprintf(w, "A webhook with the same UID already exists: %s", data.UID)
+				return
+			}
 		}
 	}
 
-	// create webhook
-	webhook := discord.NewWebhook(
-		user.DiscordUser.UserID,
-		data.UID,
-		data.WebhookURL,
-		data.Secret,
-		discord.WebhookData(data.Payload),
-	)
+	if webhook == nil {
+		// create webhook
+		webhook = discord.NewWebhook(
+			user.DiscordUser.UserID,
+			data.UID,
+			data.WebhookURL,
+			data.Secret,
+			discord.WebhookData(data.Payload),
+		)
+	}
 
 	// validate webhook
 	req, err := webhook.CheckValidityWithSend(args)

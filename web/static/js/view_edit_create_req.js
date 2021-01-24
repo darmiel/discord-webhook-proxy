@@ -1,5 +1,5 @@
-const form = $("#createForm");
-const data = $("#createDataForm");
+const form = $("#webhookForm");
+const data = $("#webhookDataForm");
 
 const api = "/dashboard/create/req";
 
@@ -53,15 +53,46 @@ form.on("submit", (event) => {
                 const p = data.serializeFormJSON();
                 p["args"] = args; // append example args
 
-                const json = JSON.stringify(p);
+                const editMode = "EditMode" in p;
+                if (editMode) {
+                    p["force"] = true;
+                }
 
-                const f = await fetch(api, {
+                // make request
+                let json = JSON.stringify(p);
+                let f = await fetch(api, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json"
                     },
                     body: json
                 });
+
+                // duplicate?
+                if (f.status === 300) {
+                    const res = await Swal.fire({
+                        title: 'Are you sure?',
+                        text: "A webhook with the same UID already exists. Do you want to overwrite it?",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Yes, overwrite it!'
+                    });
+                    if (res.isConfirmed) {
+                        p["force"] = true;
+
+                        // recreate request and send again
+                        json = JSON.stringify(p);
+                        f = await fetch(api, {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json"
+                            },
+                            body: json
+                        });
+                    }
+                }
 
                 // get text
                 const text = await f.text();
@@ -83,7 +114,7 @@ form.on("submit", (event) => {
                     const url = `/call/json/${userId}/${uid}/${secret}`;
 
                     const html = `
-                        <h2>Webhook created successfully!</h2>
+                        <h2>Webhook ` + (editMode ? "edited" : "created") + ` successfully!</h2>
                         <ul style="list-style-type: none; padding: 0; margin: 0;">
                             <li><strong>UID:</strong></li>
                             <li>${uid}</li>
@@ -97,22 +128,32 @@ form.on("submit", (event) => {
                         <h3>Request Data</h3>
                         <pre class="lang-json" style="text-align: left !important;">${sentJson}</pre>`;
 
-                    return Swal.fire({
-                        position: 'top-end',
-                        icon: "success",
-                        title: "Result:",
-                        html: html,
+                    if (!editMode) {
+                        return Swal.fire({
+                            position: 'top-end',
+                            icon: "success",
+                            title: "Result:",
+                            html: html,
 
-                        showCancelButton: true,
-                        cancelButtonText: "🌱 Add another webhook",
-                        confirmButtonText: "👉 View/Edit webhook"
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            window.location = `/dashboard/${uid}`;
-                        } else {
-                            window.location = `/dashboard/create`;
-                        }
-                    })
+                            showCancelButton: true,
+                            cancelButtonText: "🌱 Add another webhook",
+                            confirmButtonText: "👉 View/Edit webhook"
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                window.location = `/dashboard/edit/${uid}`;
+                            } else {
+                                window.location = `/dashboard/create`;
+                            }
+                        })
+                    } else {
+                        return Swal.fire({
+                            position: 'top-end',
+                            icon: "success",
+                            title: "Result:",
+                            html: html,
+                            confirmButtonText: "✅ Okidoki!"
+                        })
+                    }
                 }
             }
         }

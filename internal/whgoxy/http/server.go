@@ -65,6 +65,7 @@ func (ws *WebServer) updateRoutes() {
 		// dashboard
 		{"/dashboard", ws.dashboardHandler},
 		{"/dashboard/create", ws.createRouteHandler},
+		{"/dashboard/edit/{uid}", ws.editWebhookHandler},
 	}
 
 	for _, r := range routes {

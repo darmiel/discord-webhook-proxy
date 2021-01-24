@@ -1,0 +1,37 @@
+{{ define "customCSS" }}
+
+{{ end }}
+
+{{ define "title" }}
+    whgoxy - Create / Edit / View
+{{ end }}
+
+{{ define "content" }}
+    <!-- Start Content -->
+    <section id="welcome">
+        <div class="container py-5">
+            <div class="row">
+                <div class="col-md-6" id="sectionLeft">
+                    {{ if .Webhook }}
+                        <h1 class="text-blurple text-right">View / Edit</h1>
+                    {{ else if .ModeCreate }}
+                        <h1 class="text-blurple text-right">Create</h1>
+                    {{ else }}
+                        <h1 class="text-blurple text-right">Webhook not found :(</h1>
+                    {{ end }}
+                </div>
+            </div>
+
+            {{ if .Webhook }}
+                {{ template "component_edit_webhook" .Webhook }}
+            {{ else if .ModeCreate }}
+                {{ template "component_edit_webhook" }}
+            {{ else }}
+                <a href="/dashboard" class="text-blurple">Back to dashboard</a>
+            {{ end }}
+        </div>
+    </section>
+
+    <script src="/static/js/webhook_placeholder_syntax.js"></script>
+    <script src="/static/js/view_edit_create_req.js"></script>
+{{ end }}
