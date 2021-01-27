@@ -2,6 +2,7 @@ package http
 
 import (
 	"fmt"
+	"github.com/darmiel/whgoxy/internal/whgoxy/db"
 	"github.com/darmiel/whgoxy/internal/whgoxy/discord"
 	"html/template"
 	"log"
@@ -22,6 +23,14 @@ func NewTemplateParser() (parser *TemplateParser) {
 var funcs = map[string]interface{}{
 	"Avatar": func(u *discord.DiscordUser) string {
 		return u.GetAvatarUrl()
+	},
+	"WebhookCount": func(u *discord.DiscordUser) uint {
+		count, err := db.GlobalDatabase.CountWebhooksForUser(u.UserID)
+		if err != nil {
+			log.Println("🐛 Error counting webhooks:", err)
+			return 0
+		}
+		return count
 	},
 }
 

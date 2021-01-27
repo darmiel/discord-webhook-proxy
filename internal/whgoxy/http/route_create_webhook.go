@@ -32,6 +32,21 @@ func (ws *WebServer) createWebhookRouteHandler(w http.ResponseWriter, r *http.Re
 		return
 	}
 
+	// check webhook limit
+	count, err := ws.Database.CountWebhooksForUser(user.DiscordUser.UserID)
+	if err != nil {
+		w.WriteHeader(400)
+		_, _ = fmt.Fprintf(w, "Error reading your webhooks: %s", err.Error())
+		return
+	}
+
+	// check limit
+	if count >= user.DiscordUser.Attributes.MaxWebhookCount {
+		w.WriteHeader(400)
+		_, _ = fmt.Fprint(w, "Sorry, you can't create more webhooks. Please ask to increase the limit on the Discord server.")
+		return
+	}
+
 	all, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		w.WriteHeader(400)

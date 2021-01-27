@@ -11,6 +11,11 @@
             <div class="row">
                 <div class="col-md-6" id="sectionLeft">
                     <h1 class="text-blurple text-right">Dashboard</h1>
+                    <h2 class="text-light my-5">
+                        {{ .User | WebhookCount }} of
+                        <span class="text-blurple">{{ .User.Attributes.MaxWebhookCount }}</span>
+                        Webhooks created.
+                    </h2>
                 </div>
                 {{ if .Error }}
                     <div class="col-md-6">
@@ -37,51 +42,51 @@
 
 {{ define "webhook_scripts" }}
     <script>
-    function deleteWebhook(uid) {
-        // user id
-        const userId = "{{ .User.UserID }}";
+        function deleteWebhook(uid) {
+            // user id
+            const userId = "{{ .User.UserID }}";
 
-        Swal.fire({
-            title: 'Are you sure?',
-            text: "You won't be able to revert this webhook!",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#d33',
-            cancelButtonColor: '#3085d6',
-            confirmButtonText: '🗑',
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this webhook!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: '🗑',
 
-            showLoaderOnConfirm: true,
+                showLoaderOnConfirm: true,
 
-            preConfirm: () => {
-                $.ajax({
-                    url: "/dashboard/delete",
-                    method: "POST",
-                    data: JSON.stringify({
-                        "user_id": userId,
-                        "uid": uid
-                    }),
-                    dataType: "json",
-                    success: () => {
-                        Swal.fire({
-                            icon: "success",
-                            title: "Webhook deleted!",
-                        }).then((result) => {
-                            if (result.isConfirmed) {
-                                window.location.reload();
-                            }
-                        });
-                    },
-                    error: (data) => {
-                        const r = $.parseJSON(data.responseText);
-                        Swal.fire({
-                            icon: "error",
-                            title: "Error",
-                            text: r.error
-                        });
-                    }
-                });
-            },
-        });
-    }
+                preConfirm: () => {
+                    $.ajax({
+                        url: "/dashboard/delete",
+                        method: "POST",
+                        data: JSON.stringify({
+                            "user_id": userId,
+                            "uid": uid
+                        }),
+                        dataType: "json",
+                        success: () => {
+                            Swal.fire({
+                                icon: "success",
+                                title: "Webhook deleted!",
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    window.location.reload();
+                                }
+                            });
+                        },
+                        error: (data) => {
+                            const r = $.parseJSON(data.responseText);
+                            Swal.fire({
+                                icon: "error",
+                                title: "Error",
+                                text: r.error
+                            });
+                        }
+                    });
+                },
+            });
+        }
     </script>
 {{ end }}

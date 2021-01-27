@@ -39,3 +39,5 @@ type Database interface {
 
 	Disconnect() (err error)
 }
+
+var GlobalDatabase Database

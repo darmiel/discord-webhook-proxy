@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/darmiel/whgoxy/internal/whgoxy/config"
+	"github.com/darmiel/whgoxy/internal/whgoxy/db"
 	"github.com/darmiel/whgoxy/internal/whgoxy/db/dbmongo"
 	"github.com/darmiel/whgoxy/internal/whgoxy/http"
 	"github.com/darmiel/whgoxy/internal/whgoxy/http/auth"
@@ -27,6 +28,7 @@ func main() {
 			log.Fatalln("Fatal:", err)
 		}
 	}()
+	db.GlobalDatabase = database
 
 	// create web server
 	ws := http.NewWebServer(conf.Web, database)
