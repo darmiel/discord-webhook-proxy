@@ -4,9 +4,11 @@ import (
 	"errors"
 	"github.com/darmiel/whgoxy/internal/whgoxy/db"
 	"github.com/darmiel/whgoxy/internal/whgoxy/discord"
+	"github.com/darmiel/whgoxy/internal/whgoxy/http/auth"
 	"github.com/patrickmn/go-cache"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"log"
 )
 
 var (
@@ -16,7 +18,7 @@ var (
 /// Webhook Query Functions
 
 func (mdb *mongoDatabase) findWebhookWithFilter(filter bson.M) (w *discord.Webhook, err error) {
-	res := mdb.collection().FindOne(mdb.context, filter)
+	res := mdb.webhookCollection().FindOne(mdb.context, filter)
 	if res.Err() != nil {
 		return nil, res.Err()
 	}
@@ -70,7 +72,7 @@ func (mdb *mongoDatabase) FindWebhooks(userID string) (w []*discord.Webhook, err
 		"user_id": userID,
 	}
 
-	res, err := mdb.collection().Find(mdb.context, filter, options.Find())
+	res, err := mdb.webhookCollection().Find(mdb.context, filter, options.Find())
 	if err != nil {
 		return nil, err
 	}
@@ -88,4 +90,43 @@ func (mdb *mongoDatabase) FindWebhooks(userID string) (w []*discord.Webhook, err
 	db.UserWebhookCache.Set(userID, w, cache.DefaultExpiration)
 
 	return w, nil
+}
+
+/////
+
+func (mdb *mongoDatabase) FindDiscordUser(userID string) (dcu *discord.DiscordUser, err error) {
+	// check cache
+	if u, found := auth.AuthUserCache.Get(userID); found {
+		return u.(*auth.User).DiscordUser, nil
+	}
+
+	filter := bson.M{
+		"user_id": userID,
+	}
+
+	res := mdb.userCollection().FindOne(mdb.context, filter, options.FindOne())
+	if res.Err() != nil {
+		return nil, res.Err()
+	}
+
+	dcu = &discord.DiscordUser{}
+	err = res.Decode(dcu)
+
+	// repair user
+	if err == nil && dcu.Repair() {
+		log.Println("🔨 Repaired user", userID, "(", dcu.GetFullName(), ")")
+		if e := mdb.SaveDiscordUser(dcu); e != nil {
+			err = errors.New("error saving repaired user: " + e.Error())
+		}
+	}
+
+	return
+}
+
+func (mdb *mongoDatabase) CountWebhooksForUser(userID string) (count uint, err error) {
+	webhooks, err := mdb.FindWebhooks(userID)
+	if err != nil {
+		return 0, err
+	}
+	return uint(len(webhooks)), nil
 }

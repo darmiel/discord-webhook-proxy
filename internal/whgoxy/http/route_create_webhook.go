@@ -90,18 +90,12 @@ func (ws *WebServer) createWebhookRouteHandler(w http.ResponseWriter, r *http.Re
 				// update webhook
 				if data.Payload != string(wh.Data) {
 					webhook.Data = discord.WebhookData(data.Payload)
-					log.Println("✍️ Data changed")
-					log.Println(wh.Data, "<->", data.Payload)
 				}
 				if data.WebhookURL != wh.WebhookURL {
 					webhook.WebhookURL = data.WebhookURL
-					log.Println("✍️ Webhook url")
-					log.Println(wh.WebhookURL, "<->", data.WebhookURL)
 				}
 				if data.Secret != wh.Secret {
 					webhook.Secret = data.Secret
-					log.Println("✍️ Secret changed")
-					log.Println(wh.Secret, "<->", data.Secret)
 				}
 			} else {
 				w.WriteHeader(300)
@@ -111,6 +105,7 @@ func (ws *WebServer) createWebhookRouteHandler(w http.ResponseWriter, r *http.Re
 		}
 	}
 
+	// check secret
 	if data.Secret != "" {
 		// check secret validity
 		if err := discord.CheckSecretValidity(data.Secret); err != nil {
@@ -135,8 +130,6 @@ func (ws *WebServer) createWebhookRouteHandler(w http.ResponseWriter, r *http.Re
 			discord.WebhookData(data.Payload),
 		)
 	}
-
-	// check secret
 
 	// validate webhook
 	req, err := webhook.CheckValidityWithSend(args)

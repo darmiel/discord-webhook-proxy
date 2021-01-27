@@ -10,7 +10,8 @@ import (
 	"log"
 )
 
-const CollectionName string = "whgoxy"
+const WebhookCollectionName string = "whgoxy-webhooks"
+const UserCollectionName string = "whgoxy-users"
 
 /// Mongo Functions
 
@@ -20,9 +21,13 @@ type mongoDatabase struct {
 	database string
 }
 
-// collection returns the collection used for whgoxy
-func (mdb *mongoDatabase) collection() (collection *mongo.Collection) {
-	return mdb.client.Database(mdb.database).Collection(CollectionName)
+// webhookCollection returns the webhookCollection used for whgoxy
+func (mdb *mongoDatabase) webhookCollection() (collection *mongo.Collection) {
+	return mdb.client.Database(mdb.database).Collection(WebhookCollectionName)
+}
+
+func (mdb *mongoDatabase) userCollection() (collection *mongo.Collection) {
+	return mdb.client.Database(mdb.database).Collection(UserCollectionName)
 }
 
 // Disconnect disconnects the mongo client and should be run at the end of the program

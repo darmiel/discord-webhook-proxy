@@ -6,6 +6,7 @@ import (
 	"github.com/patrickmn/go-cache"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"log"
 )
 
 /// Webhook Update Functions
@@ -17,7 +18,7 @@ func (mdb *mongoDatabase) SaveWebhook(w *discord.Webhook) (err error) {
 
 	updateOpts := options.Update().SetUpsert(true)
 
-	_, err = mdb.collection().UpdateOne(mdb.context, filter, update, updateOpts)
+	_, err = mdb.webhookCollection().UpdateOne(mdb.context, filter, update, updateOpts)
 
 	// save to cache
 	if err == nil {
@@ -26,7 +27,7 @@ func (mdb *mongoDatabase) SaveWebhook(w *discord.Webhook) (err error) {
 		db.UserWebhookCache.Delete(w.UserID)
 	}
 
-	return err
+	return
 }
 
 // DeleteWebhook ...
@@ -39,12 +40,24 @@ func (mdb *mongoDatabase) DeleteWebhook(uid string, userID string) (err error) {
 		"uid":     uid,
 	}
 
-	_, err = mdb.collection().DeleteOne(mdb.context, filter)
+	_, err = mdb.webhookCollection().DeleteOne(mdb.context, filter)
 
 	// delete from cache
 	if err == nil {
 		db.WebhookCache.Delete(db.GetCacheKeyManual(userID, uid))
 	}
 
+	return
+}
+
+func (mdb *mongoDatabase) SaveDiscordUser(dcu *discord.DiscordUser) (err error) {
+	log.Println("💾 Saving user", dcu.GetFullName(), "...")
+
+	filter := bson.M{"user_id": dcu.UserID}
+	update := bson.M{"$set": dcu}
+
+	updateOpts := options.Update().SetUpsert(true)
+
+	_, err = mdb.userCollection().UpdateOne(mdb.context, filter, update, updateOpts)
 	return
 }

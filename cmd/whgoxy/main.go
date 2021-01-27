@@ -32,7 +32,7 @@ func main() {
 	ws := http.NewWebServer(conf.Web, database)
 
 	// auth
-	auth.InitOAuth2(conf.Auth, ws.Router)
+	auth.InitOAuth2(conf.Auth, ws.Router, database)
 
 	if err := ws.Run(); err != nil {
 		panic(err)

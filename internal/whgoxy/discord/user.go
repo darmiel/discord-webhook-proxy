@@ -11,14 +11,15 @@ import (
 )
 
 type DiscordUser struct {
-	UserID        string `json:"id"`
-	Username      string `json:"username"`
-	Avatar        string `json:"avatar"`
-	Discriminator string `json:"discriminator"`
-	PublicFlags   int    `json:"public_flags"`
-	Flags         int    `json:"flags"`
-	Locale        string `json:"locale"`
-	MFAEnabled    bool   `json:"mfa_enabled"`
+	UserID        string      `json:"id" bson:"id"`
+	Username      string      `json:"username" bson:"username"`
+	Avatar        string      `json:"avatar" bson:"avatar""`
+	Discriminator string      `json:"discriminator" bson:"discriminator"`
+	PublicFlags   int         `json:"public_flags" bson:"public_flags"`
+	Flags         int         `json:"flags" bson:"flags"`
+	Locale        string      `json:"locale" bson:"locale"`
+	MFAEnabled    bool        `json:"mfa_enabled" bson:"mfa_enabled"`
+	Attributes    *attributes `json:"attributes" bson:"attributes"`
 }
 
 func (u *DiscordUser) GetFullName() string {
@@ -64,4 +65,16 @@ func NewUserByToken(token *oauth2.Token) (u *DiscordUser, err error) {
 	}
 
 	return u, nil
+}
+
+func (u *DiscordUser) Repair() (updated bool) {
+	if u.Attributes == nil {
+		u.Attributes = NewDefaultAttributes()
+		updated = true
+	}
+	// repair attributes
+	if u.Attributes.Repair() {
+		updated = true
+	}
+	return
 }

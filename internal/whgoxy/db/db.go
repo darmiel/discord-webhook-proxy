@@ -24,5 +24,18 @@ type Database interface {
 	// Does not check further if the webhook existed before!
 	DeleteWebhook(uid string, userID string) (err error)
 
+	// CountWebhooksForUser returns the amount of webhooks
+	CountWebhooksForUser(userID string) (count uint, err error)
+
+	////
+
+	// FindDiscordUser searches for a discord user
+	FindDiscordUser(userID string) (dgd *discord.DiscordUser, err error)
+
+	// SaveDiscordUser saves a discord user to the database
+	SaveDiscordUser(dgd *discord.DiscordUser) (err error)
+
+	////
+
 	Disconnect() (err error)
 }
