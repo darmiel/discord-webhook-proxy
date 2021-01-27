@@ -17,11 +17,16 @@
                     {{ else if .ModeCreate }}
                         <h1 class="text-blurple text-right">Create</h1>
 
+                        <!-- Check for webhook limit -->
                         {{ $current := .User | WebhookCount }}
                         {{ $max := .User.Attributes.MaxWebhookCount }}
 
                         {{ if ge $current $max }}
-                            <span style="color: #e67e22"><strong>Warning:</strong> You've reached your webhook limit</span>
+                            <!-- Display Webhook Limit Warning -->
+                            <span style="color: #e67e22">
+                                <strong>Warning:</strong>
+                                You've reached your webhook limit
+                            </span>
                         {{ end }}
 
                     {{ else }}

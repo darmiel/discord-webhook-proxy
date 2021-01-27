@@ -140,6 +140,22 @@ func LoginUser(w http.ResponseWriter, u *User) {
 	dgu := u.DiscordUser
 	log.Println("👋 Logging in ", dgu.GetFullName(), "("+dgu.UserID+")", "...")
 
+	if dbu, _ := db.GlobalDatabase.FindDiscordUser(dgu.UserID); dbu != nil {
+		log.Printf("   └ User found in database. Using attributes: %+v\n", dbu.Attributes)
+		// update attributes from database
+		dgu.Attributes = dbu.Attributes
+	}
+
+	// search in database for user
+	databaseUser, _ := db.GlobalDatabase.FindDiscordUser(dgu.UserID)
+	if databaseUser != nil {
+	}
+
+	// repair discord user
+	if dgu.Repair() {
+		log.Println("   └ User repaired.")
+	}
+
 	// generate cookie
 	cookie := authcookie.NewSinceNow(
 		dgu.UserID,
@@ -158,7 +174,7 @@ func LoginUser(w http.ResponseWriter, u *User) {
 	AuthUserCache.Set(dgu.UserID, u, cache.DefaultExpiration)
 
 	// save to database
-	if err := database.SaveDiscordUser(u.DiscordUser); err != nil {
+	if err := database.SaveDiscordUser(dgu); err != nil {
 		log.Println("🤬 Error saving", u.DiscordUser.GetFullName(), ":", err)
 	}
 }
