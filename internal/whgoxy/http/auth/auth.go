@@ -140,15 +140,11 @@ func LoginUser(w http.ResponseWriter, u *User) {
 	dgu := u.DiscordUser
 	log.Println("👋 Logging in ", dgu.GetFullName(), "("+dgu.UserID+")", "...")
 
+	// search in database for user
 	if dbu, _ := db.GlobalDatabase.FindDiscordUser(dgu.UserID); dbu != nil {
 		log.Printf("   └ User found in database. Using attributes: %+v\n", dbu.Attributes)
 		// update attributes from database
 		dgu.Attributes = dbu.Attributes
-	}
-
-	// search in database for user
-	databaseUser, _ := db.GlobalDatabase.FindDiscordUser(dgu.UserID)
-	if databaseUser != nil {
 	}
 
 	// repair discord user
