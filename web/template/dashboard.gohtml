@@ -42,10 +42,10 @@
 
 {{ define "webhook_scripts" }}
     <script>
-        function deleteWebhook(uid) {
-            // user id
-            const userId = "{{ .User.UserID }}";
+        // user id
+        const userId = "{{ .User.UserID }}";
 
+        function deleteWebhook(uid) {
             Swal.fire({
                 title: 'Are you sure?',
                 text: "You won't be able to revert this webhook!",
@@ -87,6 +87,48 @@
                     });
                 },
             });
+        }
+
+        function selectText(node) {
+            node = document.getElementById(node);
+            if (document.body.createTextRange) {
+                const range = document.body.createTextRange();
+                range.moveToElementText(node);
+                range.select();
+            } else if (window.getSelection) {
+                const selection = window.getSelection();
+                const range = document.createRange();
+                range.selectNodeContents(node);
+                selection.removeAllRanges();
+                selection.addRange(range);
+            }
+        }
+
+        function copyURL(elem) {
+            const e = $(elem);
+            const uid = e.attr("data-webhook-uid");
+            const secret = e.attr("data-webhook-secret");
+
+            const href = window.location.href;
+            let pos = href.indexOf("/", href.indexOf("//") + 2);
+            if (pos === -1) {
+                pos = href.length();
+            }
+            const url = href.substring(0, pos);
+
+            // /call/json/{userid}/{uid}/{secret}
+            const callUrl = `${url}/call/json/${userId}/${uid}/${secret}`;
+
+            Swal.fire({
+                title: 'Show URL',
+                html: `<input type="text"
+value="${callUrl}"
+id="swal-input1"
+class="swal2-input"
+readonly>`
+            });
+
+            alert(callUrl);
         }
     </script>
 {{ end }}

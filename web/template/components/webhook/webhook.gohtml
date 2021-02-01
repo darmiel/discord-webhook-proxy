@@ -24,7 +24,12 @@
                 </div>
                 <div class="col-md-2">
                     <a href="#" class="text-center deletebtn" onclick="deleteWebhook('{{ .UID }}');">Delete</a>
-                    <button class="whbtn copybtn">Copy URL</button>
+                    <button
+                            class="whbtn copybtn"
+                            data-webhook-uid="{{ .UID }}"
+                            data-webhook-secret="{{ .Secret }}"
+                            onclick="copyURL(this);">Show URL
+                    </button>
                 </div>
             </div>
         </div>
