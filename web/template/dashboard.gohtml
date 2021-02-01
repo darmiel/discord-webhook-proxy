@@ -89,23 +89,9 @@
             });
         }
 
-        function selectText(node) {
-            node = document.getElementById(node);
-            if (document.body.createTextRange) {
-                const range = document.body.createTextRange();
-                range.moveToElementText(node);
-                range.select();
-            } else if (window.getSelection) {
-                const selection = window.getSelection();
-                const range = document.createRange();
-                range.selectNodeContents(node);
-                selection.removeAllRanges();
-                selection.addRange(range);
-            }
-        }
-
         function copyURL(elem) {
             const e = $(elem);
+
             const uid = e.attr("data-webhook-uid");
             const secret = e.attr("data-webhook-secret");
 
@@ -121,14 +107,8 @@
 
             Swal.fire({
                 title: 'Show URL',
-                html: `<input type="text"
-value="${callUrl}"
-id="swal-input1"
-class="swal2-input"
-readonly>`
+                html: `<input type="text" value="${callUrl}" id="swal-input1" class="swal2-input" readonly>`
             });
-
-            alert(callUrl);
         }
     </script>
 {{ end }}
