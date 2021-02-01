@@ -13,14 +13,24 @@
 
             <!-- Row 2 -->
             <div class="row">
+
                 <div class="col-md-10">
                     <label for="secrettxt">Secret:</label>
-                    <input
-                            id="secrettxt"
-                            type="text"
-                            class="secret"
-                            value="{{ .Secret }}"
-                    />
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span
+                                    class="input-group-text"
+                                    onclick="toggleSecretVisibility(this);">
+                                <a href="#" class="pw-visibility">👀</a>
+                            </span>
+                        </div>
+                        <input
+                                id="secrettxt"
+                                type="password"
+                                class="secret"
+                                value="{{ .Secret }}"
+                        />
+                    </div>
                 </div>
                 <div class="col-md-2">
                     <a href="#" class="text-center deletebtn" onclick="deleteWebhook('{{ .UID }}');">Delete</a>

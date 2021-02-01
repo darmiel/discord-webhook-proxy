@@ -58,11 +58,15 @@
 
     font-family: "Courier New", Courier, monospace;
 
-    width: 100%;
+    width: 95%;
     height: 40px;
     padding: 0px 10px;
     line-height: 10px;
 
     border-radius: 5px;
     border: none;
+}
+
+.pw-visibility {
+    text-decoration: none;
 }

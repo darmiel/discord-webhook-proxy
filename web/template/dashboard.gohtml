@@ -110,5 +110,16 @@
                 html: `<input type="text" value="${callUrl}" id="swal-input1" class="swal2-input" readonly>`
             });
         }
+
+        function toggleSecretVisibility(elem) {
+            const e = $(elem);
+            const div = e.parent().parent();
+            const find = div.find("input");
+            if (!find || find.length <= 0) {
+                return;
+            }
+            const inp = find[0];
+            inp.type = inp.type === "password" ? "text" : "password";
+        }
     </script>
 {{ end }}
