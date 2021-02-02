@@ -21,6 +21,10 @@ const api = "/dashboard/create/req";
     };
 })(jQuery);
 
+function htmlEncode(value) {
+    return $('<textarea/>').text(value).html();
+}
+
 // save last data
 let lastData = `{
   "Camera": {
@@ -108,8 +112,10 @@ form.on("submit", (event) => {
                     // decode response
                     const resp = JSON.parse(text);
 
-                    const {webhook, sent_json: sentJson} = resp;
+                    let {webhook, sent_json: sentJson} = resp;
                     const {uid, user_id: userId, secret} = webhook;
+
+                    sentJson = htmlEncode(sentJson);
 
                     const url = `/call/json/${userId}/${uid}/${secret}`;
 
@@ -150,7 +156,7 @@ form.on("submit", (event) => {
                             position: 'top-end',
                             icon: "success",
                             title: "Result:",
-                            html: html,
+                            html:  html,
                             confirmButtonText: "✅ Okidoki!"
                         })
                     }

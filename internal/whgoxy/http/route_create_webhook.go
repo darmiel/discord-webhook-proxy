@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/darmiel/whgoxy/internal/whgoxy/discord"
 	"github.com/darmiel/whgoxy/internal/whgoxy/http/auth"
+	"html"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -53,6 +54,7 @@ func (ws *WebServer) createWebhookRouteHandler(w http.ResponseWriter, r *http.Re
 		_, _ = fmt.Fprintf(w, "Error (Request) reading your webhook: %s", err.Error())
 		return
 	}
+	all = []byte(html.UnescapeString(string(all)))
 
 	// "validate" json and create webhook data
 	var data CreateWebhookPayload
