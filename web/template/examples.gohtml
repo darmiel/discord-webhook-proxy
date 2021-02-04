@@ -12,6 +12,27 @@
     <script>hljs.initHighlightingOnLoad();</script>
     <!-- End Hightlight.JS -->
 
+    <style>
+        .ex {
+            padding: 10px;
+        }
+
+        .ex-1 {
+            background: #2C2F33;
+            border: 1px solid #99AAB5;
+            border-radius: 10px;
+        }
+
+        .toc {
+            text-decoration: none;
+            color: #99AAB5;
+        }
+
+        .ex-img {
+            max-width: 600px;
+        }
+    </style>
+
     <section id="welcome">
         <div class="container-lg py-5">
             <div class="row">
@@ -20,6 +41,11 @@
                     <h2 class="text-light my-5">
                         Here are a few examples to show what <strong>whgoxy</strong> can do:
                     </h2>
+                    <ul class="toc">
+                        <li><a class="toc" href="#placeholders">Placeholders</a></li>
+                        <li><a class="toc" href="#list">List</a></li>
+                        <li><a class="toc" href="#dynamic-fields">Dynamic Fields</a></li>
+                    </ul>
                 </div>
 
                 <div class="col-md-6 py-5">
@@ -32,39 +58,44 @@
             </div>
         </div>
     </section>
-
-    <div class="pt-5 mb-4" id="features">
-        <div class="container card-columns">
-            <div class="card featureCard">
-                <div class="card-body text-center">
-                    <h5 class="card-title">Placeholders</h5>
+    <section>
+        <div class="container-md py-5">
+            <!-- Example 1 -->
+            <div class="row ex ex-1">
+                <div class="col-md-6" id="placeholders">
+                    <h3 class="text-light text-right">Placeholders</h3>
                 </div>
 
                 {{ template "example-1" }}
             </div>
 
-            <div class="card featureCard">
-                <div class="card-body text-center">
-                    <h5 class="card-title">List</h5>
+            <hr>
+
+            <!-- Example 2 -->
+            <div class="row ex ex-1">
+                <div class="col-md-6" id="list">
+                    <h3 class="text-light text-right">List</h3>
                 </div>
 
                 {{ template "example-2" }}
             </div>
 
-            <div class="card featureCard">
-                <div class="card-body text-center">
-                    <h5 class="card-title">Dynamic Fields</h5>
+            <hr>
+
+            <!-- Example 3 -->
+            <div class="row ex ex-1">
+                <div class="col-md-6" id="dynamic-fields">
+                    <h3 class="text-light text-right">Dynamic Fields</h3>
                 </div>
 
                 {{ template "example-3" }}
             </div>
         </div>
-    </div>
-
+    </section>
 {{ end }}
 
 {{ define "example-1" }}
-    <div class="card-body text-center"><h3>Webhook</h3></div>
+    <div class="text-light text-right"><h5>Webhook</h5></div>
     <pre><code class="language-json">{
   "content": "[ @everyone ]",
   "username": "Notify for {{ "{{ .Camera.Name }}" }}",
@@ -87,7 +118,7 @@
   ]
 }</code></pre>
 
-    <div class="card-body text-center"><h3>POST /call</h3></div>
+    <div class="text-light text-right"><h5>POST /call</h5></div>
     <pre><code class="language-json">{
     "Camera": {
         "ID": 1,
@@ -96,12 +127,12 @@
         "Stream": "http://192.168.0.5:80"
     }
 }</code></pre>
-    <div class="card-body text-center"><h3>Output</h3></div>
-    <img src="/static/img/exo2.png" width="100%" alt="example1">
+    <div class="text-light text-right"><h5>Output</h5></div>
+    <img class="ex-img" src="/static/img/exo2.png" alt="example1">
 {{ end }}
 
 {{ define "example-2" }}
-    <div class="card-body text-center"><h3>Webhook</h3></div>
+    <div class="text-light text-right"><h5>Webhook</h5></div>
     <pre><code class="language-json">{
       "content": "[ @everyone ]\n\n
     **My favorite musicians:**\n
@@ -116,7 +147,7 @@
     {{ "{{ end }}" }}"
 }</code></pre>
 
-    <div class="card-body text-center"><h3>POST /call</h3></div>
+    <div class="text-light text-right"><h5>POST /call</h5></div>
     <pre><code class="language-json">{
     "Musicians": [
         "Lil Dicky",
@@ -127,24 +158,24 @@
     ]
 }</code></pre>
 
-    <div class="card-body text-center"><h3>Output</h3></div>
-    <img src="/static/img/exo1.png" width="100%" alt="example2">
+    <div class="text-light text-right"><h5>Output</h5></div>
+    <img class="ex-img" src="/static/img/exo1.png" alt="example2">
 {{ end }}
 
 {{ define "example-3" }}
-    <div class="card-body text-center"><h3>Webhook</h3></div>
+    <div class="text-light text-right"><h5>Webhook</h5></div>
     <pre><code class="language-json">{{ "{{ define \"fields\" }}" }}
-    {{ "{{ range $k, $v := . }}" }}
-        {{ "{{- if $k }}" }}
+            {{ "{{ range $k, $v := . }}" }}
+            {{ "{{- if $k }}" }}
             {{ "{{- \",\" -}}" }}
-        {{ "{{ end }}" }}
+            {{ "{{ end }}" }}
         {
             "name": "{{ "{{ $v.Name }}" }}",
             "value": "{{ "{{ $v.Value }}" }}",
             "inline": true
         }
     {{ "{{ end }}" }}
-{{ "{{ end }}" }}
+            {{ "{{ end }}" }}
 
 {
     "content": "Hello, {{ "{{ .User }}" }}!",
@@ -159,7 +190,7 @@
     ]
 }</code></pre>
 
-    <div class="card-body text-center"><h3>POST /call</h3></div>
+    <div class="text-light text-right"><h5>POST /call</h5></div>
     <pre><code class="language-json">{
   "User": "Me",
   "M": [
@@ -182,6 +213,6 @@
   ]
 }</code></pre>
 
-    <div class="card-body text-center"><h3>Output</h3></div>
-    <img src="/static/img/exo3.png" width="100%" alt="example3">
+    <div class="text-light text-right"><h5>Output</h5></div>
+    <img  class="ex-img" src="/static/img/exo3.png" alt="example3">
 {{ end }}
