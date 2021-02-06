@@ -42,6 +42,10 @@ func (w *Webhook) ParseNewLine() {
 	w.Data = WebhookData(strings.ReplaceAll(string(w.Data), "\n", ""))
 }
 
+func (w *Webhook) GetID() string {
+	return w.UserID + ":" + w.UID
+}
+
 func (w *Webhook) CreateFilter(includeSecret bool) (filter bson.M) {
 	params := []bson.M{
 		{"uid": w.UID},

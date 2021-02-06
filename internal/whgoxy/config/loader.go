@@ -20,6 +20,7 @@ type Config struct {
 	Web   WebConfig
 	Auth  OAuthConfig
 	Mongo MongoConfig
+	Redis RedisConfig
 }
 
 type MongoConfig struct {
@@ -49,6 +50,12 @@ type OAuthConfig struct {
 type WebConfig struct {
 	WebDir string
 	Addr   string
+}
+
+type RedisConfig struct {
+	Addr     string
+	Password string
+	DB       int
 }
 
 func Load() (conf Config) {

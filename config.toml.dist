@@ -25,3 +25,8 @@
     CookieHost = "localhost"
     CookieSecret = ""
     CookieName = "whgoxy-authenticated"
+
+[Redis]
+    Addr = "localhost:6379"
+    Password = ""
+    DB = 0

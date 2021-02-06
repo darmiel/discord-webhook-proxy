@@ -1,9 +1,11 @@
 package main
 
 import (
+	"context"
 	"github.com/darmiel/whgoxy/internal/whgoxy/config"
 	"github.com/darmiel/whgoxy/internal/whgoxy/db"
 	"github.com/darmiel/whgoxy/internal/whgoxy/db/dbmongo"
+	"github.com/darmiel/whgoxy/internal/whgoxy/db/dbredis"
 	"github.com/darmiel/whgoxy/internal/whgoxy/http"
 	"github.com/darmiel/whgoxy/internal/whgoxy/http/auth"
 	"log"
@@ -25,10 +27,18 @@ func main() {
 	defer func() {
 		log.Println("[Database] Closing database connection")
 		if err := database.Disconnect(); err != nil {
-			log.Fatalln("Fatal:", err)
+			log.Fatalln("(Database) Fatal:", err)
 		}
 	}()
 	db.GlobalDatabase = database
+
+	// load redis
+	client := dbredis.NewClient(conf.Redis)
+	if err := client.Set(context.TODO(), "heartbeat", 1, 0).Err(); err != nil {
+		log.Fatalln("(Redis) Fatal:", err)
+		return
+	}
+	dbredis.GlobalRedis = client
 
 	// create web server
 	ws := http.NewWebServer(conf.Web, database)

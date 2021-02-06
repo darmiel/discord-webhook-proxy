@@ -59,8 +59,14 @@ func (ws *WebServer) jsonWebhookRouteHandler(w http.ResponseWriter, r *http.Requ
 	sentJson, err := webhook.Send(params)
 	if err != nil {
 		_, _ = fmt.Fprintf(w, "Error (Discord): %s", err.Error())
+		if e := webhook.AddError(err, sentJson); e != nil {
+			log.Println("📈 Error saving stat (error):", err)
+		}
 		return
 	}
 
 	_, _ = fmt.Fprintf(w, "Success: %s", sentJson)
+	if e := webhook.AddSuccess(); e != nil {
+		log.Println("📈 Error saving stat (success):", err)
+	}
 }
