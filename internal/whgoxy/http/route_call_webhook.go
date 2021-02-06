@@ -69,4 +69,6 @@ func (ws *WebServer) jsonWebhookRouteHandler(w http.ResponseWriter, r *http.Requ
 	if e := webhook.AddSuccess(); e != nil {
 		log.Println("📈 Error saving stat (success):", err)
 	}
+
+	log.Printf("Stats: %+v\n", webhook.GetStats())
 }

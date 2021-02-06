@@ -3,6 +3,7 @@ package discord
 import (
 	"context"
 	"github.com/darmiel/whgoxy/internal/whgoxy/db/dbredis"
+	"log"
 	"time"
 )
 
@@ -53,6 +54,37 @@ func (w *Webhook) AddSuccess() (reserr error) {
 		context.TODO(),
 		key,
 	).Err()
+
+	return
+}
+
+type WebhookStats struct {
+	SuccessfulCalls   uint64
+	UnsuccessfulCalls uint64
+	LastErrorMessage  string
+	LastErrorSentJson string
+}
+
+func (w *Webhook) GetStats() (stats *WebhookStats) {
+	stats = &WebhookStats{
+		SuccessfulCalls:   0,
+		UnsuccessfulCalls: 0,
+		LastErrorMessage:  "",
+		LastErrorSentJson: "",
+	}
+
+	redis := dbredis.GlobalRedis
+	key := "whgoxy::stats::" + w.GetID() + "::"
+	log.Println("key:", key)
+	log.Println("redis:", redis)
+	log.Println(redis.Get(context.TODO(), "heartbeat"))
+
+	// successful calls
+	stats.SuccessfulCalls, _ = redis.Get(context.TODO(), key+"success::count").Uint64()
+	stats.UnsuccessfulCalls, _ = redis.Get(context.TODO(), key+"error::count").Uint64()
+
+	stats.LastErrorMessage, _ = redis.Get(context.TODO(), key+"error::msg").Result()
+	stats.LastErrorSentJson, _ = redis.Get(context.TODO(), key+"error::json").Result()
 
 	return
 }

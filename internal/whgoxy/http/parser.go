@@ -32,6 +32,19 @@ var funcs = map[string]interface{}{
 		}
 		return count
 	},
+	"GetStats": func(w *discord.Webhook) *discord.WebhookStats {
+		stats := w.GetStats()
+		if stats.LastErrorMessage == "" {
+			stats.LastErrorMessage = "< No error message >"
+		}
+		if stats.LastErrorSentJson == "" {
+			stats.LastErrorSentJson = "< No sent json >"
+		}
+		return stats
+	},
+	"Escape": func(s string) string {
+		return template.HTMLEscaper(s)
+	},
 }
 
 func (parser *TemplateParser) ParseTemplate(name string) (tpl *template.Template, err error) {

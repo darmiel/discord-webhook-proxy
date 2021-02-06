@@ -121,5 +121,21 @@
             const inp = find[0];
             inp.type = inp.type === "password" ? "text" : "password";
         }
+
+        function showLastErrorInfo(msg, js) {
+            Swal.fire({
+                icon: 'warning',
+                html: `
+<h2>Last Error Message:</h2>
+<pre>
+${msg}
+</pre>
+<hr>
+<h2>Last sent JSON:</h2>
+<pre>
+${js}
+</pre>`
+            });
+        }
     </script>
 {{ end }}

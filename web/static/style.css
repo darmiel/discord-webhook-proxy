@@ -142,3 +142,7 @@ h2 {
 .wave {
     background: #23272A;
 }
+
+.noa {
+    text-decoration: none !important;
+}

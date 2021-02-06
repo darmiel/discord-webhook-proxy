@@ -1,10 +1,26 @@
 {{ define "webhook_elem" }}
+
+    {{ $stats := . | GetStats }}
+
     <div class="webhook">
         <div class="container p-3">
             <!-- Row 1 -->
             <div class="row">
-                <div class="col-md-10">
+                <div class="col-md-8">
                     <h3 class="headerId">{{ .UID }}</h3>
+                </div>
+                <div class="col-md-2">
+                    {{ if $stats }}
+                        <strong class="text-light">✅: {{ $stats.SuccessfulCalls }}</strong> |
+                        <a
+                                class="noa"
+                                style="text-decoration: none"
+                                href="#"
+                                onclick="showLastErrorInfo('{{ $stats.LastErrorMessage | Escape}}', '{{ $stats.LastErrorSentJson | Escape }}')"
+                        >
+                            <strong class="text-blurple">❌: {{ $stats.UnsuccessfulCalls }}</strong>
+                        </a>
+                    {{ end }}
                 </div>
                 <div class="col-md-2">
                     <button class="whbtn editbtn" onclick="location.href='/dashboard/edit/{{ .UID }}'">Edit</button>
