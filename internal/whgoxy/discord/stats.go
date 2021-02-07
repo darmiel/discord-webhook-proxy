@@ -3,18 +3,15 @@ package discord
 import (
 	"context"
 	"github.com/darmiel/whgoxy/internal/whgoxy/db/dbredis"
-	"log"
 	"time"
 )
 
 func (w *Webhook) AddError(err error, json string) (reserr error) {
-	key := "whgoxy::stats::" + w.GetID() + "::error::"
-
 	// increment error count
 	redis := dbredis.GlobalRedis
 	reserr = redis.Incr(
 		context.TODO(),
-		key+"count",
+		dbredis.GetKey(w.UserID, w.UID, dbredis.KeyErrorCount),
 	).Err()
 	if reserr != nil {
 		return
@@ -23,7 +20,7 @@ func (w *Webhook) AddError(err error, json string) (reserr error) {
 	// set error message
 	reserr = redis.Set(
 		context.TODO(),
-		key+"msg",
+		dbredis.GetKey(w.UserID, w.UID, dbredis.KeyErrorMessage),
 		err.Error(),
 		7*24*time.Hour,
 	).Err()
@@ -34,7 +31,7 @@ func (w *Webhook) AddError(err error, json string) (reserr error) {
 	// set json
 	reserr = redis.Set(
 		context.TODO(),
-		key+"json",
+		dbredis.GetKey(w.UserID, w.UID, dbredis.KeyErrorJson),
 		json,
 		7*24*time.Hour,
 	).Err()
@@ -46,16 +43,12 @@ func (w *Webhook) AddError(err error, json string) (reserr error) {
 }
 
 func (w *Webhook) AddSuccess() (reserr error) {
-	key := "whgoxy::stats::" + w.GetID() + "::success::count"
-
 	// increment success count
 	redis := dbredis.GlobalRedis
-	reserr = redis.Incr(
+	return redis.Incr(
 		context.TODO(),
-		key,
+		dbredis.GetKey(w.UserID, w.UID, dbredis.KeySuccessCount),
 	).Err()
-
-	return
 }
 
 type WebhookStats struct {
@@ -73,18 +66,11 @@ func (w *Webhook) GetStats() (stats *WebhookStats) {
 		LastErrorSentJson: "",
 	}
 
-	redis := dbredis.GlobalRedis
-	key := "whgoxy::stats::" + w.GetID() + "::"
-	log.Println("key:", key)
-	log.Println("redis:", redis)
-	log.Println(redis.Get(context.TODO(), "heartbeat"))
-
 	// successful calls
-	stats.SuccessfulCalls, _ = redis.Get(context.TODO(), key+"success::count").Uint64()
-	stats.UnsuccessfulCalls, _ = redis.Get(context.TODO(), key+"error::count").Uint64()
-
-	stats.LastErrorMessage, _ = redis.Get(context.TODO(), key+"error::msg").Result()
-	stats.LastErrorSentJson, _ = redis.Get(context.TODO(), key+"error::json").Result()
+	stats.SuccessfulCalls, _ = dbredis.Get(w.UserID, w.UID, dbredis.KeySuccessCount).Uint64()
+	stats.UnsuccessfulCalls, _ = dbredis.Get(w.UserID, w.UID, dbredis.KeyErrorCount).Uint64()
+	stats.LastErrorMessage, _ = dbredis.Get(w.UserID, w.UID, dbredis.KeyErrorMessage).Result()
+	stats.LastErrorSentJson, _ = dbredis.Get(w.UserID, w.UID, dbredis.KeyErrorJson).Result()
 
 	return
 }

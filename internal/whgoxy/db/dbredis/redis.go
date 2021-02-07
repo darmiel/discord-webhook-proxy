@@ -1,6 +1,7 @@
 package dbredis
 
 import (
+	"context"
 	"github.com/darmiel/whgoxy/internal/whgoxy/config"
 	"github.com/go-redis/redis/v8"
 )
@@ -14,3 +15,41 @@ func NewClient(cfg config.RedisConfig) *redis.Client {
 }
 
 var GlobalRedis *redis.Client
+
+const (
+	KeySuccessCount = iota
+	KeyErrorCount
+	KeyErrorMessage
+	KeyErrorJson
+)
+
+func Get(userID, uid string, keyType int) *redis.StringCmd {
+	key := GetKey(userID, uid, keyType)
+	if key == "" {
+		return &redis.StringCmd{}
+	}
+	return GlobalRedis.Get(context.TODO(), key)
+}
+
+func GetKey(userID, uid string, keyType int) (res string) {
+	res = "whgoxy::stats::us:" + userID + "::ui:" + uid
+
+	switch keyType {
+	case KeySuccessCount:
+		res += "::success:count"
+		break
+	case KeyErrorCount:
+		res += "::error:count"
+		break
+	case KeyErrorMessage:
+		res += "::error:msg"
+		break
+	case KeyErrorJson:
+		res += "::error:json"
+		break
+	default:
+		return ""
+	}
+
+	return
+}
