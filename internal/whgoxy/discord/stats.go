@@ -56,6 +56,8 @@ type WebhookStats struct {
 	UnsuccessfulCalls uint64
 	LastErrorMessage  string
 	LastErrorSentJson string
+	CallsGlobal       uint64
+	Calls60           uint64
 }
 
 func (w *Webhook) GetStats() (stats *WebhookStats) {
@@ -71,6 +73,9 @@ func (w *Webhook) GetStats() (stats *WebhookStats) {
 	stats.UnsuccessfulCalls, _ = dbredis.Get(w.UserID, w.UID, dbredis.KeyErrorCount).Uint64()
 	stats.LastErrorMessage, _ = dbredis.Get(w.UserID, w.UID, dbredis.KeyErrorMessage).Result()
 	stats.LastErrorSentJson, _ = dbredis.Get(w.UserID, w.UID, dbredis.KeyErrorJson).Result()
+
+	stats.CallsGlobal, _ = dbredis.Get(w.UserID, w.UID, dbredis.KeyCallGlobalCount).Uint64()
+	stats.Calls60, _ = dbredis.Get(w.UserID, w.UID, dbredis.KeyCallPerMinuteCount).Uint64()
 
 	return
 }

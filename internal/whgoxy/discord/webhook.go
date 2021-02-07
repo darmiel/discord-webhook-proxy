@@ -110,7 +110,7 @@ func (w *Webhook) SendJson(json string) (sent string, err error) {
 			redis.Expire(
 				context.TODO(),
 				callMinuteKey,
-				60*time.Minute,
+				60*time.Second,
 			)
 		} else {
 			log.Println("     [Stats] had already expiration")
