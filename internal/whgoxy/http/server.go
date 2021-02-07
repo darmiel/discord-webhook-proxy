@@ -133,9 +133,6 @@ func (ws *WebServer) Exec(name string, r *http.Request, w http.ResponseWriter, d
 	// User
 	if user, ok := auth.GetUser(r); ok && user != nil {
 		data["User"] = user.DiscordUser
-		log.Println("OK user found:", user, ok)
-	} else {
-		log.Println("ERR user not found:", user, ok)
 	}
 
 	// get template
@@ -149,7 +146,21 @@ func (ws *WebServer) Exec(name string, r *http.Request, w http.ResponseWriter, d
 }
 
 func (ws *WebServer) MustExec(name string, w http.ResponseWriter, r *http.Request, data map[string]interface{}) {
-	log.Println(r.RemoteAddr, "requested uri:", r.RequestURI)
+
+	// access log
+	{
+		username := r.RemoteAddr
+
+		// get user
+		u, ok := auth.GetUser(r)
+		if ok {
+			username = u.DiscordUser.GetFullName()
+		}
+
+		if ok || r.RequestURI != "/" {
+			log.Println(username, "requested uri:", r.RequestURI)
+		}
+	}
 
 	if err := ws.Exec(name, r, w, data); err != nil {
 		log.Println("[WARNING] Error occurred on rendering template:", err)
