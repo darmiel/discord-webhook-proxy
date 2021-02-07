@@ -79,3 +79,36 @@ func (w *Webhook) GetStats() (stats *WebhookStats) {
 
 	return
 }
+
+func (w *Webhook) AddCallStats() {
+	redis := dbredis.GlobalRedis
+
+	/// global call count
+	redis.Incr(
+		context.TODO(),
+		dbredis.GetKey(w.UserID, w.UID, dbredis.KeyCallGlobalCount),
+	)
+	///
+
+	/// calls per minute
+	callMinuteKey := dbredis.GetKey(w.UserID, w.UID, dbredis.KeyCallPerMinuteCount)
+	expire, _ := redis.Exists(
+		context.TODO(),
+		callMinuteKey,
+	).Result()
+
+	// increment
+	redis.Incr(
+		context.TODO(),
+		callMinuteKey,
+	)
+
+	// expire?
+	if expire == 0 {
+		redis.Expire(
+			context.TODO(),
+			callMinuteKey,
+			60*time.Second,
+		)
+	}
+}

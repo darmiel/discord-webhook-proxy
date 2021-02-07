@@ -1,20 +1,25 @@
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@600&display=swap');
+
 :root {
     --col-blurple: #6480d0;
     --col-dark: #202325;
     --col-darker: #1c1e20;
     --col-notthatdark: #24272A;
+
+    --col-wh-bg: #1c1e20;
+    --col-wh-inp: #202325;
 }
 .webhook {
     max-height: 150px;
     height: 150px;
     width: 100%;
-    background: var(--col-darker);
+    background: var(--col-wh-bg);
     border-radius: 10px;
 
-    border-bottom: 4px solid var(--col-blurple);
+    border-bottom: 6px solid var(--col-blurple);
 }
 .webhook .headerId {
-    font-family: 'Courier New', Courier, monospace;
+    font-family: 'Fira Code', monospace;
     color: var(--col-blurple);
 }
 
@@ -25,11 +30,13 @@
     padding: 0;
     border: none;
     border-radius: 5px;
+
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
 }
 
 /* Edit */
 .webhook .editbtn {
-    background: #202325;
+    background: var(--col-wh-inp);
     color: #ffffff;
     height: 35px;
 }
@@ -54,7 +61,7 @@
 /* Text */
 .webhook .secret {
     color: var(--col-blurple);
-    background: var(--col-dark);
+    background: var(--col-wh-inp);
 
     font-family: "Courier New", Courier, monospace;
 
@@ -65,6 +72,8 @@
 
     border-radius: 5px;
     border: none;
+
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
 }
 
 .pw-visibility {
