@@ -2,13 +2,17 @@ package discord
 
 import (
 	"bytes"
+	"context"
 	"errors"
+	"github.com/darmiel/whgoxy/internal/whgoxy/db/dbredis"
 	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson"
+	"log"
 	"math"
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
 )
 
 type Webhook struct {
@@ -73,6 +77,47 @@ func (w *Webhook) Send(param ...interface{}) (sentJson string, err error) {
 }
 
 func (w *Webhook) SendJson(json string) (sent string, err error) {
+
+	// Redis Stats
+	go func() {
+		redis := dbredis.GlobalRedis
+
+		/// global call count
+		log.Println("[Stats] Increment global calls")
+		redis.Incr(
+			context.TODO(),
+			dbredis.GetKey(w.UserID, w.UID, dbredis.KeyCallGlobalCount),
+		)
+		///
+
+		/// calls per minute
+		callMinuteKey := dbredis.GetKey(w.UserID, w.UID, dbredis.KeyCallPerMinuteCount)
+		expire, err := redis.Exists(
+			context.TODO(),
+			callMinuteKey,
+		).Result()
+		log.Println("expire, err :=", expire, err)
+
+		// increment
+		log.Println("  [Stats] Incr-Result:", redis.Incr(
+			context.TODO(),
+			callMinuteKey,
+		))
+
+		// expire?
+		if expire == 0 {
+			log.Println("     [Stats] Set new expiration")
+			redis.Expire(
+				context.TODO(),
+				callMinuteKey,
+				60*time.Minute,
+			)
+		} else {
+			log.Println("     [Stats] had already expiration")
+		}
+		///
+	}()
+
 	sent = json
 
 	reader := bytes.NewReader([]byte(json))
