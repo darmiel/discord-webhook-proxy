@@ -65,7 +65,11 @@
                     <div class="col-md-12 pt-2">
                         <span>Calls: {{ $stats.CallsGlobal }} (global)</span>,
                         <span>{{ $stats.Calls60 }} (60s)</span> |
-                        <span>Successful: {{ $stats.SuccessfulCalls }}</span>,
+                        <span>Successful: {{ $stats.SuccessfulCalls }}
+                            <strong>
+                                ({{ $stats.LastSuccessfulCall | StrAgo }} ago)
+                            </strong>
+                        </span>,
                         <a
                                 class="noa"
                                 style="text-decoration: none"
@@ -73,7 +77,11 @@
                                 onclick="showLastErrorInfo('{{ $stats.LastErrorMessage | Escape}}', '{{ $stats.LastErrorSentJson | Escape }}')"
                         >
                             <span>Unsuccessful: {{ $stats.UnsuccessfulCalls }}</span>
-                            {{ if $stats.LastErrorSentJson }}
+                            <strong>
+                                ({{ $stats.LastUnsuccessfulCall | StrAgo }} ago)
+                            </strong>
+
+                            {{ if $stats.LastErrorMessage }}
                                 (<code>{{ $stats.LastErrorMessage | Escape }}</code>)
                             {{ end }}
                         </a>

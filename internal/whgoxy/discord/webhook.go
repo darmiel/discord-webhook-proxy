@@ -69,7 +69,8 @@ func (w *Webhook) Send(param ...interface{}) (sentJson string, err error) {
 		return "", err
 	}
 	// send data
-	return w.SendJson(data)
+	sentJson, err = w.SendJson(data)
+	return
 }
 
 func (w *Webhook) SendJson(json string) (sent string, err error) {
@@ -91,17 +92,17 @@ func (w *Webhook) SendJson(json string) (sent string, err error) {
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		return json, err
+		return sent, err
 	}
 
 	s := math.Floor(float64(resp.StatusCode) / 100)
 	if s != float64(2) {
-		return "", errors.New("status was not 2xx but " + strconv.Itoa(resp.StatusCode))
+		return sent, errors.New("status was not 2xx but " + strconv.Itoa(resp.StatusCode))
 	}
 
 	defer func() {
 		_ = resp.Body.Close()
 	}()
 
-	return json, nil
+	return
 }

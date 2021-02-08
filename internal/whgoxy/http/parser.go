@@ -9,6 +9,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 )
 
 const rootTmpl = `{{ define "root" }} {{ template "base" . }} {{ end }}`
@@ -18,6 +19,14 @@ type TemplateParser struct {
 
 func NewTemplateParser() (parser *TemplateParser) {
 	return &TemplateParser{}
+}
+
+func fmtDuration(d time.Duration) string {
+	d = d.Round(time.Minute)
+	h := d / time.Hour
+	d -= h * time.Hour
+	m := d / time.Minute
+	return fmt.Sprintf("%02d:%02d", h, m)
 }
 
 var funcs = map[string]interface{}{
@@ -38,6 +47,12 @@ var funcs = map[string]interface{}{
 	},
 	"Escape": func(s string) string {
 		return template.HTMLEscaper(s)
+	},
+	"StrAgo": func(sec int64) string {
+		if sec == 0 {
+			return "/"
+		}
+		return fmtDuration(time.Since(time.Unix(sec, 0)))
 	},
 }
 
