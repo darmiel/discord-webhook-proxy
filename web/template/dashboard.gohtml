@@ -30,6 +30,7 @@
                 {{ range .Webhooks }}
                     {{ template "webhook_elem" . }}
                     <br>
+                    <br>
                 {{ end }}
             {{ else }}
                 No webhooks found :( <a href="/dashboard/create">Create!</a>

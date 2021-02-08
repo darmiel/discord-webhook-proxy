@@ -41,6 +41,10 @@ func (ws *WebServer) jsonWebhookRouteHandler(w http.ResponseWriter, r *http.Requ
 	// read body
 	all, err := ioutil.ReadAll(r.Body)
 	if err != nil {
+		go func() {
+			_ = webhook.AddError(err, "")
+		}()
+
 		w.WriteHeader(400)
 		_, _ = fmt.Fprintf(w, "Error (Request) reading your webhook: %s", err.Error())
 		return
@@ -49,11 +53,18 @@ func (ws *WebServer) jsonWebhookRouteHandler(w http.ResponseWriter, r *http.Requ
 
 	// try to unmarshall
 	if err := json.Unmarshal(all, &params); err != nil {
-		w.WriteHeader(205)
 		log.Println("🚨 Error unmarshalling:", err)
-	} else {
-		w.WriteHeader(200)
+		go func() {
+			_ = webhook.AddError(err, "")
+		}()
+
+		// send response
+		w.WriteHeader(205)
+		_, _ = fmt.Fprintf(w, "Error: %s", err.Error())
+		return
 	}
+
+	w.WriteHeader(200)
 
 	// send webhook
 	sentJson, err := webhook.Send(params)

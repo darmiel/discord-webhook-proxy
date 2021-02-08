@@ -34,12 +34,6 @@ var funcs = map[string]interface{}{
 	},
 	"GetStats": func(w *discord.Webhook) *discord.WebhookStats {
 		stats := w.GetStats()
-		if stats.LastErrorMessage == "" {
-			stats.LastErrorMessage = "< No error message >"
-		}
-		if stats.LastErrorSentJson == "" {
-			stats.LastErrorSentJson = "< No sent json >"
-		}
 		return stats
 	},
 	"Escape": func(s string) string {

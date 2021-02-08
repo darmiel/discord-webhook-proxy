@@ -6,23 +6,8 @@
         <div class="container p-3">
             <!-- Row 1 -->
             <div class="row">
-                <div class="col-md-7">
+                <div class="col-md-10">
                     <h3 class="headerId">{{ .UID }}</h3>
-                </div>
-                <div class="col-md-3">
-                    {{ if $stats }}
-                        <strong class="text-light">☑️: {{ $stats.CallsGlobal }}</strong> |
-                        <strong class="text-light">⏱: {{ $stats.Calls60 }}</strong> |
-                        <strong class="text-light">✅: {{ $stats.SuccessfulCalls }}</strong> |
-                        <a
-                                class="noa"
-                                style="text-decoration: none"
-                                href="#"
-                                onclick="showLastErrorInfo('{{ $stats.LastErrorMessage | Escape}}', '{{ $stats.LastErrorSentJson | Escape }}')"
-                        >
-                            <strong class="text-blurple">❌: {{ $stats.UnsuccessfulCalls }}</strong>
-                        </a>
-                    {{ end }}
                 </div>
                 <div class="col-md-2">
                     <button class="whbtn editbtn" onclick="location.href='/dashboard/edit/{{ .UID }}'">Edit</button>
@@ -61,5 +46,28 @@
                 </div>
             </div>
         </div>
+
+        {{ if $stats }}
+            <div class="container">
+                <div class="row statusindicator mt-1">
+                    <div class="col-md-12 pt-2">
+                        <span>Calls: {{ $stats.CallsGlobal }} (global)</span>,
+                        <span>{{ $stats.Calls60 }} (60s)</span> |
+                        <span>Successful: {{ $stats.SuccessfulCalls }}</span>,
+                        <a
+                                class="noa"
+                                style="text-decoration: none"
+                                href="#"
+                                onclick="showLastErrorInfo('{{ $stats.LastErrorMessage | Escape}}', '{{ $stats.LastErrorSentJson | Escape }}')"
+                        >
+                            <span>Unsuccessful: {{ $stats.UnsuccessfulCalls }}</span>
+                            {{ if $stats.LastErrorSentJson }}
+                                (<code>{{ $stats.LastErrorMessage | Escape }}</code>)
+                            {{ end }}
+                        </a>
+                    </div>
+                </div>
+            </div>
+        {{ end }}
     </div>
 {{ end }}
