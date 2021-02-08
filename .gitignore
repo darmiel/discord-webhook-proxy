@@ -4,6 +4,7 @@ auth_config.toml
 web_config.toml
 
 /bin/
+/vs-web/
 
 
 

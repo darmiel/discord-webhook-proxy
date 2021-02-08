@@ -63,28 +63,32 @@
             <div class="container">
                 <div class="row statusindicator {{ $status_color }} mt-1">
                     <div class="col-md-12 pt-2">
-                        <span>Calls: {{ $stats.CallsGlobal }} (global)</span>,
-                        <span>{{ $stats.Calls60 }} (60s)</span> |
-                        <span>Successful: {{ $stats.SuccessfulCalls }}
+                        {{ if eq $status_color "" }}
+                            <span class="text-light"><i>No calls recorded (yet).</i></span>
+                        {{ else }}
+                            <span>Calls: {{ $stats.CallsGlobal }} (global)</span>,
+                            <span>{{ $stats.Calls60 }} (60s)</span> |
+                            <span>Successful: {{ $stats.SuccessfulCalls }}
                             <strong>
                                 ({{ $stats.LastSuccessfulCall | StrAgo }} ago)
                             </strong>
                         </span>,
-                        <a
-                                class="noa"
-                                style="text-decoration: none"
-                                href="#"
-                                onclick="showLastErrorInfo('{{ $stats.LastErrorMessage | Escape}}', '{{ $stats.LastErrorSentJson | Escape }}')"
-                        >
-                            <span>Unsuccessful: {{ $stats.UnsuccessfulCalls }}</span>
-                            <strong>
-                                ({{ $stats.LastUnsuccessfulCall | StrAgo }} ago)
-                            </strong>
+                            <a
+                                    class="noa"
+                                    style="text-decoration: none"
+                                    href="#"
+                                    onclick="showLastErrorInfo('{{ $stats.LastErrorMessage | Escape}}', '{{ $stats.LastErrorSentJson | Escape }}')"
+                            >
+                                <span>Unsuccessful: {{ $stats.UnsuccessfulCalls }}</span>
+                                <strong>
+                                    ({{ $stats.LastUnsuccessfulCall | StrAgo }} ago)
+                                </strong>
 
-                            {{ if $stats.LastErrorMessage }}
-                                (<code>{{ $stats.LastErrorMessage | Escape }}</code>)
-                            {{ end }}
-                        </a>
+                                {{ if $stats.LastErrorMessage }}
+                                    (<code>{{ $stats.LastErrorMessage | Escape }}</code>)
+                                {{ end }}
+                            </a>
+                        {{ end }}
                     </div>
                 </div>
             </div>

@@ -44,31 +44,7 @@ func (ws *WebServer) updateRoutes() {
 	prefix := http.StripPrefix("/static", http.FileServer(http.Dir(staticDir)))
 	router.PathPrefix("/static/").Handler(prefix)
 
-	// routes
-	type Route struct {
-		Path string
-		Func func(http.ResponseWriter, *http.Request)
-	}
-
-	routes := []Route{
-		// "static"
-		{"/", ws.homeRouteHandler},
-		{"/examples", ws.exampleRouteHandler},
-
-		// "api"
-		{"/dashboard/create/req", ws.createWebhookRouteHandler},
-		{"/dashboard/delete", ws.deleteWebhookRouteHandler},
-
-		// "other"
-		{"/call/json/{userid}/{uid}/{secret}", ws.jsonWebhookRouteHandler},
-
-		// dashboard
-		{"/dashboard", ws.dashboardHandler},
-		{"/dashboard/create", ws.createRouteHandler},
-		{"/dashboard/edit/{uid}", ws.editWebhookHandler},
-	}
-
-	for _, r := range routes {
+	for _, r := range ws.getRoutes() {
 		log.Println("[Router] Registered route ", r.Path)
 		router.HandleFunc(r.Path, r.Func)
 	}
