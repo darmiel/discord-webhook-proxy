@@ -9,6 +9,7 @@
     --col-wh-bg: #1c1e20;
     --col-wh-inp: #202325;
 }
+
 .webhook {
     max-height: 150px;
     height: 150px;
@@ -20,6 +21,7 @@
     z-index: 5;
     position: relative;
 }
+
 .webhook .headerId {
     font-family: 'Fira Code', monospace;
     color: var(--col-blurple);
@@ -42,6 +44,7 @@
     color: #ffffff;
     height: 35px;
 }
+
 .webhook .editbtn:hover {
     background: #17191b;
 }
@@ -51,6 +54,7 @@
     color: #ffffff;
     height: 40px;
 }
+
 .webhook .copybtn:hover {
     background: #4e66aa;
 }
@@ -85,7 +89,15 @@
 .statusindicator {
     border-bottom-left-radius: 10px;
     border-bottom-right-radius: 10px;
-    background: #2ecc71;
     z-index: 4 !important;
     position: relative;
+    background: #2c3e50;
+}
+
+.status-red {
+    background: #e74c3c !important;
+}
+
+.status-green {
+    background: #2ecc71 !important;
 }

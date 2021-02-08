@@ -39,12 +39,32 @@ func (w *Webhook) AddError(err error, json string) (reserr error) {
 		return
 	}
 
+	// set last success / error time
+	reserr = redis.Set(
+		context.TODO(),
+		dbredis.GetKey(w.UserID, w.UID, dbredis.KeyLastErrorTime),
+		time.Now().Unix(),
+		7*24*time.Hour,
+	).Err()
+
 	return nil
 }
 
 func (w *Webhook) AddSuccess() (reserr error) {
 	// increment success count
 	redis := dbredis.GlobalRedis
+
+	// set last success / error time
+	reserr = redis.Set(
+		context.TODO(),
+		dbredis.GetKey(w.UserID, w.UID, dbredis.KeyLastSuccessTime),
+		time.Now().Unix(),
+		7*24*time.Hour,
+	).Err()
+	if reserr != nil {
+		return
+	}
+
 	return redis.Incr(
 		context.TODO(),
 		dbredis.GetKey(w.UserID, w.UID, dbredis.KeySuccessCount),
@@ -52,12 +72,17 @@ func (w *Webhook) AddSuccess() (reserr error) {
 }
 
 type WebhookStats struct {
-	SuccessfulCalls   uint64
-	UnsuccessfulCalls uint64
+	SuccessfulCalls    uint64
+	LastSuccessfulCall int64
+
+	UnsuccessfulCalls    uint64
+	LastUnsuccessfulCall int64
+
 	LastErrorMessage  string
 	LastErrorSentJson string
-	CallsGlobal       uint64
-	Calls60           uint64
+
+	CallsGlobal uint64
+	Calls60     uint64
 }
 
 func (w *Webhook) GetStats() (stats *WebhookStats) {
@@ -76,6 +101,9 @@ func (w *Webhook) GetStats() (stats *WebhookStats) {
 
 	stats.CallsGlobal, _ = dbredis.Get(w.UserID, w.UID, dbredis.KeyCallGlobalCount).Uint64()
 	stats.Calls60, _ = dbredis.Get(w.UserID, w.UID, dbredis.KeyCallPerMinuteCount).Uint64()
+
+	stats.LastSuccessfulCall, _ = dbredis.Get(w.UserID, w.UID, dbredis.KeyLastSuccessTime).Int64()
+	stats.LastUnsuccessfulCall, _ = dbredis.Get(w.UserID, w.UID, dbredis.KeyLastErrorTime).Int64()
 
 	return
 }

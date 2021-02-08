@@ -2,6 +2,18 @@
 
     {{ $stats := . | GetStats }}
 
+    <!-- Get Status Color -->
+    {{ $status_color := "" }}
+    {{ if eq $stats.LastSuccessfulCall $stats.LastUnsuccessfulCall }}
+        {{ $status_color = "" }}
+    {{ else }}
+        {{ if ge $stats.LastSuccessfulCall $stats.LastUnsuccessfulCall }}
+            {{ $status_color = "status-green" }}
+        {{ else }}
+            {{ $status_color = "status-red" }}
+        {{ end }}
+    {{ end }}
+
     <div class="webhook">
         <div class="container p-3">
             <!-- Row 1 -->
@@ -38,7 +50,7 @@
                 <div class="col-md-2">
                     <a href="#" class="text-center deletebtn" onclick="deleteWebhook('{{ .UID }}');">Delete</a>
                     <button
-                            class="whbtn copybtn"
+                            class="whbtn copybtn {{ $status_color }}"
                             data-webhook-uid="{{ .UID }}"
                             data-webhook-secret="{{ .Secret }}"
                             onclick="copyURL(this);">Show URL
@@ -49,7 +61,7 @@
 
         {{ if $stats }}
             <div class="container">
-                <div class="row statusindicator mt-1">
+                <div class="row statusindicator {{ $status_color }} mt-1">
                     <div class="col-md-12 pt-2">
                         <span>Calls: {{ $stats.CallsGlobal }} (global)</span>,
                         <span>{{ $stats.Calls60 }} (60s)</span> |

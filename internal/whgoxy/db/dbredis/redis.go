@@ -24,6 +24,8 @@ const (
 	KeyErrorJson
 	KeyCallGlobalCount
 	KeyCallPerMinuteCount
+	KeyLastSuccessTime
+	KeyLastErrorTime
 )
 
 func Get(userID, uid string, keyType int) *redis.StringCmd {
@@ -56,6 +58,12 @@ func GetKey(userID, uid string, keyType int) (res string) {
 		break
 	case KeyCallPerMinuteCount:
 		res += "::calls:60"
+		break
+	case KeyLastSuccessTime:
+		res += "::last:success"
+		break
+	case KeyLastErrorTime:
+		res += "::last:error"
 		break
 	default:
 		return ""
