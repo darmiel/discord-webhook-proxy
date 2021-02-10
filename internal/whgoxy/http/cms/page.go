@@ -12,8 +12,9 @@ type CMSPageMeta struct {
 }
 
 type CMSPagePreferences struct {
-	AuthorVisible bool
-	Dynamic       bool // Does the page include GoLang-Template content?
+	AuthorVisible    bool
+	Dynamic          bool // Does the page include GoLang-Template content?
+	URLCaseSensitive bool
 }
 
 type CMSPageUpdate struct {

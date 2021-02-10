@@ -53,6 +53,9 @@ type Database interface {
 	// Does not check further if the CMS-Page existed before!
 	DeleteCMSPage(page cms.CMSPage) (err error)
 
+	// FindWebhooks returns all CMD-Pages
+	FindAllCMSPages() (pages []*cms.CMSPage, err error)
+
 	////
 
 	Disconnect() (err error)

@@ -1,15 +1,17 @@
 package dbmongo
 
 import (
+	"errors"
 	"github.com/darmiel/whgoxy/internal/whgoxy/db"
 	"github.com/darmiel/whgoxy/internal/whgoxy/http/cms"
+	"github.com/patrickmn/go-cache"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
 // FindCMSPage ...
 func (mdb *mongoDatabase) FindCMSPage(url string) (page *cms.CMSPage, err error) {
 	// check cache
-	if p, found := db.CMSCache.Get(url); found {
+	if p, found := db.CMSCache.Get("page::" + url); found {
 		return p.(*cms.CMSPage), nil
 	}
 
@@ -26,4 +28,41 @@ func (mdb *mongoDatabase) FindCMSPage(url string) (page *cms.CMSPage, err error)
 	err = res.Decode(page)
 
 	return
+}
+
+func (mdb *mongoDatabase) FindAllCMSPages() (pages []*cms.CMSPage, err error) {
+
+	// check cache
+	if p, found := db.CMSCache.Get("*::all"); found {
+		return p.([]*cms.CMSPage), nil
+	}
+
+	filter := bson.M{}
+
+	res, err := mdb.cmsCollection().Find(mdb.context, filter)
+	if err != nil {
+		return nil, err
+	}
+
+	for res.Next(mdb.context) {
+		var page *cms.CMSPage
+		if err := res.Decode(&page); err != nil {
+			return nil, err
+		}
+
+		//goland:noinspection GoNilness
+		if page == nil {
+			return nil, errors.New("a cms page was nil")
+		}
+
+		pages = append(pages, page)
+
+		// update cache for specific page
+		db.CMSCache.Set("page::"+page.URL, page, cache.DefaultExpiration)
+	}
+
+	// update cache
+	db.CMSCache.Set("*::all", pages, cache.DefaultExpiration)
+
+	return pages, nil
 }

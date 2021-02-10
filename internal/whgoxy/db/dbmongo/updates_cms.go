@@ -18,7 +18,8 @@ func (mdb *mongoDatabase) SaveCMSPage(page cms.CMSPage) (err error) {
 
 	// save to cache
 	if err == nil {
-		db.CMSCache.Set(page.URL, &page, cache.DefaultExpiration)
+		db.CMSCache.Set("page::"+page.URL, &page, cache.DefaultExpiration)
+		db.CMSCache.Delete("*::all")
 	}
 
 	return
@@ -31,7 +32,7 @@ func (mdb *mongoDatabase) DeleteCMSPage(page cms.CMSPage) (err error) {
 
 	// remove from cache
 	if err == nil {
-		db.CMSCache.Delete(page.URL)
+		db.CMSCache.Delete("page::" + page.URL)
 	}
 
 	return
