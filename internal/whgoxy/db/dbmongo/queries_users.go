@@ -16,7 +16,7 @@ func (mdb *mongoDatabase) FindDiscordUser(userID string) (dcu *discord.DiscordUs
 	}
 
 	filter := bson.M{
-		"user_id": userID,
+		"id": userID,
 	}
 
 	res := mdb.userCollection().FindOne(mdb.context, filter, options.FindOne())

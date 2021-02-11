@@ -10,7 +10,7 @@ import (
 func (mdb *mongoDatabase) SaveDiscordUser(dcu *discord.DiscordUser) (err error) {
 	log.Println("💾 Saving user", dcu.GetFullName(), "...")
 
-	filter := bson.M{"user_id": dcu.UserID}
+	filter := bson.M{"id": dcu.UserID}
 	update := bson.M{"$set": dcu}
 
 	updateOpts := options.Update().SetUpsert(true)
