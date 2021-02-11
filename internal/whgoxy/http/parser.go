@@ -5,6 +5,7 @@ import (
 	"github.com/darmiel/whgoxy/internal/whgoxy/db"
 	"github.com/darmiel/whgoxy/internal/whgoxy/discord"
 	"github.com/darmiel/whgoxy/internal/whgoxy/http/cms"
+	"html"
 	"html/template"
 	"log"
 	"os"
@@ -52,6 +53,9 @@ var funcs = map[string]interface{}{
 	"Escape": func(s string) string {
 		return template.HTMLEscaper(s)
 	},
+	"Unescape": func(s string) string {
+		return html.UnescapeString(s)
+	},
 	"StrAgo": func(sec int64) string {
 		if sec == 0 {
 			return "/"
@@ -79,6 +83,9 @@ var funcs = map[string]interface{}{
 			return nil
 		}
 		return update.GetInfo()
+	},
+	"GetContent": func(cms *cms.CMSPage) string {
+		return cms.GetContent()
 	},
 }
 

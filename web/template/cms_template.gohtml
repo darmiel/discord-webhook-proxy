@@ -52,9 +52,23 @@
                     {{ end }}
                 </div>
             </div>
-            <div class="row text-light">
-                {{ .CMS.Content }}
+            <div class="row text-light" id="raw_content">
+                {{ .CMS | GetContent | Unescape }}
             </div>
         </div>
     </section>
+
+    <!-- Used to unescape the content -->
+    <script>
+        function htmlDecode(input) {
+            console.log("decoding:", input);
+
+            const elem = document.createElement('div');
+            elem.innerHTML = input;
+            return elem.childNodes.length === 0 ? "" : elem.childNodes[0].nodeValue;
+        }
+
+        const cnt = document.getElementById("raw_content");
+        cnt.innerHTML = htmlDecode(cnt.innerHTML);
+    </script>
 {{ end }}
