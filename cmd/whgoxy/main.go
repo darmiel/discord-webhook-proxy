@@ -32,29 +32,30 @@ func main() {
 	}()
 	db.GlobalDatabase = database
 
-	/////// TODO: Remove this
-	//page := cms.CMSPage{
-	//	URL: "/test",
-	//	Meta: cms.CMSPageMeta{
-	//		Title:         "Test-Page",
-	//		CreatorUserID: "710491120903127080",
-	//		CreatedAt:     time.Now(),
-	//	},
-	//	Updates: []cms.CMSPageUpdate{
-	//		{
-	//			UpdatedAt:     time.Now(),
-	//			UpdaterUserID: "710491120903127080",
-	//		},
-	//	},
-	//	Preferences: cms.CMSPagePreferences{
-	//		AuthorVisible:    true,
-	//		Dynamic:          false,
-	//		URLCaseSensitive: true,
-	//	},
-	//	Content: "Hallo, das ist ein Test!",
-	//}
-	//log.Println("Saving cmd page to database:", database.SaveCMSPage(page))
-	////
+	///// TODO: Remove this
+	// page := cms.CMSPage{
+	// 	URL: "/test",
+	// 	Meta: cms.CMSPageMeta{
+	// 		Title:         "Test-Page",
+	// 		CreatorUserID: "710491120903127080",
+	// 		CreatedAt:     time.Now(),
+	// 	},
+	// 	Updates: []cms.CMSPageUpdate{
+	// 		{
+	// 			UpdatedAt:     time.Now(),
+	// 			UpdaterUserID: "431537207606640651",
+	// 		},
+	// 	},
+	// 	Preferences: cms.CMSPagePreferences{
+	// 		AuthorVisible:    true,
+	// 		Dynamic:          false,
+	// 		URLCaseSensitive: true,
+	// 		UseMarkdown:      true,
+	// 	},
+	// 	Content: "Hallo, das ist ein Test!",
+	// }
+	// log.Println("Saving cmd page to database:", database.SaveCMSPage(page))
+	//
 
 	// load redis
 	client := dbredis.NewClient(conf.Redis)

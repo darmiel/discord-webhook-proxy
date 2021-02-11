@@ -12,6 +12,16 @@
                 </div>
 
                 <div class="col-md-6 text-right" style="text-align: right">
+
+                    <!-- Edit Button -->
+                    {{ if .User }}
+                        {{ if .User | HasPermissionCMSEditPage }}
+                            <div class="edit-button">
+                                <a href="#" onclick="updatePage()">Edit Page</a>
+                            </div>
+                        {{ end }}
+                    {{ end }}
+
                     {{ $creator := .CMS.Meta.CreatorUserID | GetUserByID }}
                     {{ if $creator }}
                         <div class="author float-right">
