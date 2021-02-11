@@ -1,7 +1,6 @@
 package http
 
 import (
-	"fmt"
 	"github.com/darmiel/whgoxy/internal/whgoxy/http/auth"
 	"github.com/gorilla/mux"
 	"go.mongodb.org/mongo-driver/bson"
@@ -43,23 +42,21 @@ func (ws *WebServer) error404(writer http.ResponseWriter, request *http.Request)
 
 			var matches = false
 			if !cms.Preferences.URLCaseSensitive {
-				log.Println("  -> CaSeInSeNsItIvE")
 				matches = strings.ToLower(cms.URL) == strings.ToLower(reqPage)
 			} else {
-				log.Println("  -> Case-Sensitive")
 				matches = cms.URL == reqPage
 			}
 
 			if !matches {
 				continue
 			}
-			log.Println("    -> Matches")
 
-			// TODO: Execute CMS
-			log.Println("Executing CMS", cms.URL, "(", cms.Meta.Title, ")")
+			log.Println("  Executing CMS", cms.URL, "(", cms.Meta.Title, ")")
 
 			writer.WriteHeader(200)
-			_, _ = fmt.Fprint(writer, cms.Content)
+			ws.MustExec("cms_template", writer, request, map[string]interface{}{
+				"CMS": cms,
+			})
 
 			return
 		}

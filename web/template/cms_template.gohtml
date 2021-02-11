@@ -1,0 +1,60 @@
+<!-- Attr -->
+{{ define "customCSS" }}{{ end }}
+{{ define "title" }}whgoxy - {{ .CMS.Meta.Title }}{{ end }}
+
+<!-- Content -->
+{{ define "content" }}
+    <section id="content">
+        <div class="container py-5">
+            <div class="row">
+                <div class="col-md-6" id="sectionLeft">
+                    <h1 class="text-blurple text-right">{{ .CMS.Meta.Title }}</h1>
+                </div>
+
+                <div class="col-md-6 text-right" style="text-align: right">
+                    {{ $creator := .CMS.Meta.CreatorUserID | GetUserByID }}
+                    {{ if $creator }}
+                        <div class="author float-right">
+                            <span class="text-blurple float-right">
+                            by <strong>{{ $creator | FullName }}</strong>
+                            <img
+                                    src="{{ $creator | Avatar }}"
+                                    height="32px"
+                                    width="32px"
+                                    alt="avatar"
+                                    style="border-radius: 50%;"
+                            >
+                            </span>
+                        </div>
+                        {{ $update := .CMS | CMSGetUpdateInfo }}
+                        {{ if $update }}
+                            <div class="update float-right">
+                                <span class="text-light">
+                                    Last update: <strong>{{ $update.FormattedTime }}</strong>
+                                </span>
+
+                                {{ $updater := $update.UpdaterID | GetUserByID }}
+                                {{ if $updater }}
+                                    <br>
+                                    <span class="text-muted">
+                                        by <strong>{{ $updater | FullName }}</strong>
+                                        <img
+                                                src="{{ $updater | Avatar }}"
+                                                height="24px"
+                                                width="24px"
+                                                alt="avatar"
+                                                style="border-radius: 50%;"
+                                        >
+                                    </span>
+                                {{ end }}
+                            </div>
+                        {{ end }}
+                    {{ end }}
+                </div>
+            </div>
+            <div class="row text-light">
+                {{ .CMS.Content }}
+            </div>
+        </div>
+    </section>
+{{ end }}

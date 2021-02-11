@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/darmiel/whgoxy/internal/whgoxy/db"
 	"github.com/darmiel/whgoxy/internal/whgoxy/discord"
+	"github.com/darmiel/whgoxy/internal/whgoxy/http/cms"
 	"html/template"
 	"log"
 	"os"
@@ -33,6 +34,9 @@ var funcs = map[string]interface{}{
 	"Avatar": func(u *discord.DiscordUser) string {
 		return u.GetAvatarUrl()
 	},
+	"FullName": func(u *discord.DiscordUser) string {
+		return u.GetFullName()
+	},
 	"WebhookCount": func(u *discord.DiscordUser) uint {
 		count, err := db.GlobalDatabase.CountWebhooksForUser(u.UserID)
 		if err != nil {
@@ -53,6 +57,28 @@ var funcs = map[string]interface{}{
 			return "/"
 		}
 		return fmtDuration(time.Since(time.Unix(sec, 0)))
+	},
+	"GetUserByID": func(userID string) *discord.DiscordUser {
+		if userID == "0" {
+			return &discord.DiscordUser{
+				UserID:        "0",
+				Username:      "whgoxy-System",
+				Discriminator: "0000",
+			}
+		}
+
+		user, err := db.GlobalDatabase.FindDiscordUser(userID)
+		if err != nil {
+			return nil
+		}
+		return user
+	},
+	"CMSGetUpdateInfo": func(cms *cms.CMSPage) *cms.CMSUpdateInfo {
+		update := cms.GetLastUpdate()
+		if update == nil {
+			return nil
+		}
+		return update.GetInfo()
 	},
 }
 

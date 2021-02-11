@@ -17,11 +17,6 @@ type CMSPagePreferences struct {
 	URLCaseSensitive bool `bson:"url_case_sensitive" json:"url_case_sensitive"`
 }
 
-type CMSPageUpdate struct {
-	UpdatedAt     time.Time `bson:"updated_at" json:"updated_at"`           // Time of update
-	UpdaterUserID string    `bson:"updater_user_id" json:"updater_user_id"` // UserID of updater, -1 = System
-}
-
 type CMSPage struct {
 	URL         string             `bson:"url" json:"url"`
 	Meta        CMSPageMeta        `bson:"meta" json:"meta"`
