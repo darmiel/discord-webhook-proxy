@@ -25,5 +25,8 @@ func (ws *WebServer) getRoutes() []Route {
 		{"/dashboard", ws.dashboardHandler},
 		{"/dashboard/create", ws.createRouteHandler},
 		{"/dashboard/edit/{uid}", ws.editWebhookHandler},
+
+		// cms
+		{"/cms/create", ws.createCMSPageHandler},
 	}
 }

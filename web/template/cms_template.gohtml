@@ -22,9 +22,10 @@
                         {{ end }}
                     {{ end }}
 
-                    {{ $creator := .CMS.Meta.CreatorUserID | GetUserByID }}
-                    {{ if $creator }}
-                        <div class="author float-right">
+                    {{ if .CMS.Preferences.AuthorVisible }}
+                        {{ $creator := .CMS.Meta.CreatorUserID | GetUserByID }}
+                        {{ if $creator }}
+                            <div class="author float-right">
                             <span class="text-blurple float-right">
                             by <strong>{{ $creator | FullName }}</strong>
                             <img
@@ -35,7 +36,11 @@
                                     style="border-radius: 50%;"
                             >
                             </span>
-                        </div>
+                            </div>
+                        {{ end }}
+                    {{ end }}
+
+                    {{ if .CMS.Preferences.UpdatersVisible }}
                         {{ $update := .CMS | CMSGetUpdateInfo }}
                         {{ if $update }}
                             <div class="update float-right">

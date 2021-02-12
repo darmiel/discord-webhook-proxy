@@ -1,0 +1,125 @@
+<!-- Attr -->
+{{ define "customCSS" }}{{ end }}
+{{ define "title" }}whgoxy - CMS - Create{{ end }}
+
+<!-- Content -->
+{{ define "content" }}
+    <div class="container">
+        <div class="row">
+            <h4 class="d-flex justify-content-between align-items-center mb-3">
+                <span class="text-muted">👷 (CMS) Create</span>
+            </h4>
+        </div>
+
+        <div class="row">
+            <!-- Right -->
+            <div class="col-md-4 order-md-2 mb-4">
+                <form class="card p-2 bg-dark" id="webhookForm">
+                    <div class="col-md-12 md-3">
+
+                        <!-- webhook_url -->
+                        <div class="form-group">
+                            <label for="page_url" class="text-muted">Page URL (with leading '/')</label>
+                            <input
+                                    type="text"
+                                    id="page_url"
+                                    name="page_url"
+                                    class="form-control bg-dark text-light blurple-border"
+                                    placeholder="/imprint"
+                                    required
+                            />
+                        </div>
+
+                        <!-- Title -->
+                        <div class="form-group">
+                            <label for="page_title" class="text-muted">Page Title</label>
+                            <input
+                                    type="text"
+                                    id="page_title"
+                                    name="page_title"
+                                    class="form-control bg-dark text-light blurple-border"
+                                    placeholder="My Page"
+                                    required
+                            />
+                        </div>
+
+                        <!-- Preferences -->
+                        <hr/>
+                        <!-- Preferences -->
+
+                        <!-- Use Markdown -->
+                        <div class="form-group form-check">
+                            <label for="use_markdown" class="text-muted">Use Markdown</label>
+                            <input
+                                    type="checkbox"
+                                    id="use_markdown"
+                                    name="use_markdown"
+                                    class="form-check-input"
+                                    checked
+                            />
+                        </div>
+
+                        <!-- AuthorVisible -->
+                        <div class="form-group form-check">
+                            <label for="author_visible" class="text-muted">Author Visible</label>
+                            <input
+                                    type="checkbox"
+                                    id="author_visible"
+                                    name="author_visible"
+                                    class="form-check-input"
+                                    checked
+                            />
+                        </div>
+
+                        <!-- UpdatersVisible -->
+                        <div class="form-group form-check">
+                            <label for="updaters_visible" class="text-muted">Updater Visible</label>
+                            <input
+                                    type="checkbox"
+                                    id="updaters_visible"
+                                    name="updaters_visible"
+                                    class="form-check-input"
+                                    checked
+                            />
+                        </div>
+
+                        <!-- URL Case Sensitive -->
+                        <div class="form-group form-check">
+                            <label for="url_case_sensitive" class="text-muted">URL Case Sensitive</label>
+                            <input
+                                    type="checkbox"
+                                    id="url_case_sensitive"
+                                    name="url_case_sensitive"
+                                    class="form-check-input"
+                            />
+                        </div>
+                    </div>
+
+                    <hr/>
+
+                    <button type="submit" class="btn btn-blurple ">
+                        Create Page
+                    </button>
+                </form>
+            </div>
+
+            <!-- Left -->
+            <div class="col-md-8 order-md-1">
+                <form id="cmsPageDataForm">
+                    <div class="col-md-12 mb-3">
+                        <!-- payload -->
+                        <label for="payload" class="text-muted">Page Content</label>
+                        <textarea
+                                class="form-control bg-dark text-light blurple-border"
+                                id="payload"
+                                name="payload"
+                                placeholder=""
+                                rows="20"
+                                required
+                        >## Hello World</textarea>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{{ end }}

@@ -17,6 +17,7 @@ type CMSPageMeta struct {
 
 type CMSPagePreferences struct {
 	AuthorVisible    bool `bson:"author_visible" json:"author_visible"`
+	UpdatersVisible  bool `bson:"updaters_visible" json:"updaters_visible"`
 	Dynamic          bool `bson:"dynamic" json:"dynamic"` // Does the page include GoLang-Template content?
 	URLCaseSensitive bool `bson:"url_case_sensitive" json:"url_case_sensitive"`
 	UseMarkdown      bool `bson:"markdown" json:"markdown"`
