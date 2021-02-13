@@ -33,6 +33,13 @@ func (ws *WebServer) createWebhookRouteHandler(w http.ResponseWriter, r *http.Re
 		return
 	}
 
+	// check permissions
+	if !user.DiscordUser.HasPermission(discord.PermissionWebhookCreate) {
+		w.WriteHeader(403)
+		_, _ = fmt.Fprint(w, "Sorry, you don't have permissions to create a webhook.")
+		return
+	}
+
 	// check webhook limit
 	count, err := ws.Database.CountWebhooksForUser(user.DiscordUser.UserID)
 	if err != nil {
@@ -44,7 +51,7 @@ func (ws *WebServer) createWebhookRouteHandler(w http.ResponseWriter, r *http.Re
 	// check limit
 	if count >= user.DiscordUser.Attributes.MaxWebhookCount {
 		w.WriteHeader(400)
-		_, _ = fmt.Fprint(w, "Sorry, you can't create more webhooks. Please ask to increase the limit on the Discord server.")
+		_, _ = fmt.Fprint(w, "Sorry, you can't create more webhooks.")
 		return
 	}
 
@@ -102,6 +109,14 @@ func (ws *WebServer) createWebhookRouteHandler(w http.ResponseWriter, r *http.Re
 
 			// check if forced request
 			if data.Force {
+
+				// check permission
+				if !user.DiscordUser.HasPermission(discord.PermissionWebhookEdit) {
+					w.WriteHeader(403)
+					_, _ = fmt.Fprintln(w, "You don't have permissions to edit a webhook.")
+					return
+				}
+
 				webhook = wh
 
 				// update webhook

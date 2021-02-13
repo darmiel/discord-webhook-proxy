@@ -67,11 +67,12 @@ func handleCallbackRoute(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// set cookie
-	LoginUser(w, &User{
+	if success := LoginUser(w, &User{
 		Token:       token,
 		DiscordUser: user,
-	})
+	}); success {
+		// redirect
+		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
+	}
 
-	// redirect
-	http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 }

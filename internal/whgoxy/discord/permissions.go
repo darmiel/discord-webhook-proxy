@@ -2,12 +2,27 @@ package discord
 
 type Permission uint64
 
+// Permissions
 const (
-	_ Permission = (1 << iota) - 1
+	// Basic Permissions
+	PermissionLogin Permission = 1 << iota
+
+	// Webhook
+	PermissionWebhookCreate
+	PermissionWebhookEdit
+	PermissionWebhookDelete
 
 	// CMS
 	PermissionCMSEditPage
 	PermissionCMSViewPageUpdates
+)
+
+// Permission Packs
+const (
+	PermissionPackWebhook  = PermissionWebhookCreate | PermissionWebhookEdit | PermissionWebhookDelete
+	PermissionPackBasic    = PermissionLogin | PermissionPackWebhook
+	PermissionPackCMSAdmin = PermissionCMSEditPage | PermissionCMSViewPageUpdates
+	PermissionPackAdmin    = PermissionPackBasic | PermissionPackCMSAdmin
 )
 
 func (p Permission) Has(u *DiscordUser) bool {
@@ -15,5 +30,15 @@ func (p Permission) Has(u *DiscordUser) bool {
 }
 
 func (u *DiscordUser) HasPermission(perm Permission) bool {
-	return (u.Attributes.Permissions & uint64(perm)) == uint64(perm)
+	if u == nil {
+		return false
+	}
+	if u.Attributes == nil {
+		u.Repair()
+	}
+	attr := u.Attributes
+	if (attr.PermissionsDeny & perm) == perm {
+		return false
+	}
+	return (attr.PermissionsAllow & perm) == perm
 }
