@@ -23,10 +23,11 @@ func (ws *WebServer) getRoutes() []Route {
 
 		// dashboard
 		{"/dashboard", ws.dashboardHandler},
-		{"/dashboard/create", ws.createRouteHandler},
+		{"/dashboard/create", ws.createWebhookFrontendRouteHandler},
 		{"/dashboard/edit/{uid}", ws.editWebhookHandler},
 
 		// cms
 		{"/cms/create", ws.createCMSPageHandler},
+		{"/cms/create/req", ws.createCMSPageBackendHandler},
 	}
 }

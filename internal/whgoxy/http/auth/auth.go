@@ -129,6 +129,7 @@ func GetUser(r *http.Request) (u *User, ok bool) {
 func GetUserOrDie(r *http.Request, w http.ResponseWriter) (u *User, die bool) {
 	u, ok := GetUser(r)
 	if !ok {
+		w.WriteHeader(401)
 		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 		return nil, true
 	}

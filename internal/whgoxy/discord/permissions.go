@@ -13,6 +13,7 @@ const (
 	PermissionWebhookDelete
 
 	// CMS
+	PermissionCMSCreatePage
 	PermissionCMSEditPage
 	PermissionCMSViewPageUpdates
 )
@@ -21,7 +22,7 @@ const (
 const (
 	PermissionPackWebhook  = PermissionWebhookCreate | PermissionWebhookEdit | PermissionWebhookDelete
 	PermissionPackBasic    = PermissionLogin | PermissionPackWebhook
-	PermissionPackCMSAdmin = PermissionCMSEditPage | PermissionCMSViewPageUpdates
+	PermissionPackCMSAdmin = PermissionCMSCreatePage | PermissionCMSEditPage | PermissionCMSViewPageUpdates
 	PermissionPackAdmin    = PermissionPackBasic | PermissionPackCMSAdmin
 )
 

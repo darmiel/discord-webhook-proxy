@@ -26,6 +26,13 @@ type CreateWebhookResponse struct {
 	SentJson string           `json:"sent_json"`
 }
 
+func (ws *WebServer) createWebhookFrontendRouteHandler(writer http.ResponseWriter, request *http.Request) {
+	// ws.MustExec("create", writer, request, nil)
+	ws.MustExec("vieweditcreate", writer, request, map[string]interface{}{
+		"ModeCreate": true,
+	})
+}
+
 func (ws *WebServer) createWebhookRouteHandler(w http.ResponseWriter, r *http.Request) {
 	// check if user is logged in
 	user, die := auth.GetUserOrDie(r, w)
@@ -176,7 +183,7 @@ func (ws *WebServer) createWebhookRouteHandler(w http.ResponseWriter, r *http.Re
 
 	if err := db.SaveWebhook(webhook); err != nil {
 		w.WriteHeader(400)
-		_, _ = fmt.Fprintf(w, "Webhook is vaid, but could not be saved due to a database error: %s", err.Error())
+		_, _ = fmt.Fprintf(w, "Webhook is valid, but could not be saved due to a database error: %s", err.Error())
 		return
 	}
 
