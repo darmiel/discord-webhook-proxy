@@ -29,5 +29,6 @@ func (ws *WebServer) getRoutes() []Route {
 		// cms
 		{"/cms/create", ws.createCMSPageHandler},
 		{"/cms/create/req", ws.createCMSPageBackendHandler},
+		{"/cms/edit/{full_url}", ws.editCMSPageHandler},
 	}
 }

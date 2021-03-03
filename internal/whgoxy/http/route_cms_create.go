@@ -25,7 +25,7 @@ type cmsPageCreatePayload struct {
 }
 
 func (ws *WebServer) createCMSPageHandler(writer http.ResponseWriter, request *http.Request) {
-	ws.MustExec("cms_create_page", writer, request, nil)
+	ws.MustExec("cms_vieweditcreate", writer, request, nil)
 }
 
 func (ws *WebServer) createCMSPageBackendHandler(writer http.ResponseWriter, request *http.Request) {
