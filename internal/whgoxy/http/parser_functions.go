@@ -1,6 +1,7 @@
 package http
 
 import (
+	"encoding/base64"
 	"fmt"
 	"github.com/darmiel/whgoxy/internal/whgoxy/db"
 	"github.com/darmiel/whgoxy/internal/whgoxy/discord"
@@ -69,11 +70,23 @@ var funcs = map[string]interface{}{
 	},
 
 	// Permissions
-	"HasPermissionCMSEditPage": func(u *discord.DiscordUser) bool {
-		log.Println("User", u, "requested permission", discord.PermissionCMSEditPage)
-		res := u.HasPermission(discord.PermissionCMSEditPage)
-		log.Println("  -> Res:", res)
-		return res
+	"HasPermissionCMSEditPage":     discord.PermissionCMSEditPage.Func(),
+	"PermissionCMSViewPageUpdates": discord.PermissionCMSViewPageUpdates.Func(),
+	"PermissionCMSViewPageAuthor":  discord.PermissionCMSViewPageAuthor.Func(),
+
+	// PermissionCMSViewPageAuthor
+	"de64": func(in string) string {
+		bytes, err := base64.StdEncoding.DecodeString(in)
+		if err != nil {
+			bytes = []byte("")
+		}
+		return string(bytes)
+	},
+	"en64": func(in string) string {
+		return base64.StdEncoding.EncodeToString([]byte(in))
+	},
+	"DateFMT": func(t time.Time) string {
+		return t.Format("02.01.2006 15:04:05")
 	},
 }
 

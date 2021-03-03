@@ -1,0 +1,89 @@
+<!-- Attr -->
+{{ define "customCSS" }}{{ end }}
+{{ define "title" }}whgoxy - History :: {{ .CMS.Meta.Title }}{{ end }}
+
+<!-- Content -->
+{{ define "content" }}
+    <section id="content">
+        <div class="container py-5">
+            <div class="row">
+                <div class="col-md-6" id="sectionLeft">
+                    <h1 class="text-blurple text-right">History for:</h1>
+
+                    <h4 class="d-flex justify-content-between align-items-center mb-3">
+                        <span class="text-muted">{{ .CMS.Meta.Title }}</span>
+                    </h4>
+                </div>
+            </div>
+
+            <div class="row text-light">
+                {{ if .Error }}
+                <span class="text-danger">⚠️ <strong>ERROR:</strong> {{ .Error }}</span>
+                <a href="/dashboard">
+                    <button type="submit" class="btn btn-blurple ">
+                        Back to Dashboard
+                    </button>
+                </a>
+                {{ else }}
+                {{ template "body" . }}
+
+                <!-- script for making the history request -->
+                <script src="/static/js/cms_history_req.js"></script>
+                {{ end }}
+            </div>
+        </div>
+    </section>
+
+    <!-- Used to unescape the content -->
+    <script>
+        function htmlDecode(input) {
+            const elem = document.createElement('div');
+            elem.innerHTML = input;
+            return elem.childNodes.length === 0 ? "" : elem.childNodes[0].nodeValue;
+        }
+    </script>
+{{ end }}
+
+{{ define "body" }}
+    {{ $url := .CMS.URL }}
+    {{ if not .CMS.Updates }}
+        <span class="text-danger">No Updates Found.</span>
+    {{ else }}
+        <table class="table table-dark">
+            <!-- header -->
+            <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Date</th>
+                <th scope="col">Updater</th>
+                <th scope="col">Compare</th>
+            </tr>
+            </thead>
+
+            <!-- body -->
+            <tbody>
+            {{ range $k, $v := .CMS.Updates }}
+                {{ $updater := $v.UpdaterUserID | GetUserByID }}
+                {{ $date := $v.UpdatedAt | DateFMT }}
+                <tr>
+                    <td>{{ $k }}</td>
+                    <td>{{ $date }}</td>
+                    <td>
+                        <img src="{{ $updater | Avatar }}" alt="avatar" height="32px" width="32px">
+                        {{ $updater | FullName }}
+                    </td>
+                    <td>
+                        <button
+                                type="submit"
+                                class="btn btn-blurple"
+                                onclick="showDiffWithCurrent({{$url}}, {{$k}})"
+                        >
+                            with current
+                        </button>
+                    </td>
+                </tr>
+            {{ end }}
+            </tbody>
+        </table>
+    {{ end }}
+{{ end }}

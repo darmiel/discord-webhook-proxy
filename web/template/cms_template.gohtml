@@ -17,12 +17,23 @@
                     {{ if .User }}
                         {{ if .User | HasPermissionCMSEditPage }}
                             <div class="edit-button">
-                                <a href="#" onclick="updatePage()">Edit Page</a>
+                                <a href="/cms/edit/{{ .CMS.URL | en64 }}" onclick="updatePage()">Edit Page</a>
                             </div>
                         {{ end }}
                     {{ end }}
 
+                    <!-- Start Author -->
+                    {{ $authorVisible := false }}
                     {{ if .CMS.Preferences.AuthorVisible }}
+                        {{ $authorVisible = true }}
+                    {{ else }}
+                        {{ if .User }}
+                            {{ if .User | PermissionCMSViewPageUpdates }}
+                                {{ $authorVisible = true }}
+                            {{ end }}
+                        {{ end }}
+                    {{ end }}
+                    {{ if $authorVisible }}
                         {{ $creator := .CMS.Meta.CreatorUserID | GetUserByID }}
                         {{ if $creator }}
                             <div class="author float-right">
@@ -39,8 +50,20 @@
                             </div>
                         {{ end }}
                     {{ end }}
+                    <!-- End Author -->
 
+                    <!-- Start Updater -->
+                    {{ $updatesVisible := false }}
                     {{ if .CMS.Preferences.UpdatersVisible }}
+                        {{ $updatesVisible = true }}
+                    {{ else }}
+                        {{ if .User }}
+                            {{ if .User | PermissionCMSViewPageAuthor }}
+                                {{ $updatesVisible = true }}
+                            {{ end }}
+                        {{ end }}
+                    {{ end }}
+                    {{ if $updatesVisible }}
                         {{ $update := .CMS | CMSGetUpdateInfo }}
                         {{ if $update }}
                             <div class="update float-right">
@@ -65,6 +88,7 @@
                             </div>
                         {{ end }}
                     {{ end }}
+                    <!-- End Updater -->
                 </div>
             </div>
             <div class="row text-light" id="raw_content">
@@ -76,8 +100,6 @@
     <!-- Used to unescape the content -->
     <script>
         function htmlDecode(input) {
-            console.log("decoding:", input);
-
             const elem = document.createElement('div');
             elem.innerHTML = input;
             return elem.childNodes.length === 0 ? "" : elem.childNodes[0].nodeValue;

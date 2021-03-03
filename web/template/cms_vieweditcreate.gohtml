@@ -97,7 +97,7 @@
 
                 <!-- AuthorVisible -->
                 <div class="form-group form-check">
-                    <label for="author_visible" class="text-muted">Author Visible</label>
+                    <label for="author_visible" class="text-muted">Author Publicly Visible</label>
                     <input
                             type="checkbox"
                             id="author_visible"
@@ -115,7 +115,7 @@
 
                 <!-- UpdatersVisible -->
                 <div class="form-group form-check">
-                    <label for="updaters_visible" class="text-muted">Updater Visible</label>
+                    <label for="updaters_visible" class="text-muted">Updater Publicly Visible</label>
                     <input
                             type="checkbox"
                             id="updaters_visible"
@@ -163,6 +163,9 @@
     <!-- Left -->
     <div class="col-md-8 order-md-1">
         <form id="cmsPageDataForm">
+            {{ if .CMS }}
+                <input type="hidden" id="force" name="force" value="true">
+            {{ end }}
             <div class="col-md-12 mb-3">
                 <!-- payload -->
                 <label for="payload" class="text-muted">Page Content</label>

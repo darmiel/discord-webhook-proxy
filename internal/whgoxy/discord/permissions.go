@@ -1,5 +1,7 @@
 package discord
 
+import "log"
+
 type Permission uint64
 
 // Permissions
@@ -16,15 +18,25 @@ const (
 	PermissionCMSCreatePage
 	PermissionCMSEditPage
 	PermissionCMSViewPageUpdates
+	PermissionCMSViewPageAuthor
 )
 
 // Permission Packs
 const (
 	PermissionPackWebhook  = PermissionWebhookCreate | PermissionWebhookEdit | PermissionWebhookDelete
 	PermissionPackBasic    = PermissionLogin | PermissionPackWebhook
-	PermissionPackCMSAdmin = PermissionCMSCreatePage | PermissionCMSEditPage | PermissionCMSViewPageUpdates
+	PermissionPackCMSAdmin = PermissionCMSCreatePage | PermissionCMSEditPage | PermissionCMSViewPageUpdates | PermissionCMSViewPageAuthor
 	PermissionPackAdmin    = PermissionPackBasic | PermissionPackCMSAdmin
 )
+
+func (p Permission) Func() func(u *DiscordUser) bool {
+	return func(u *DiscordUser) bool {
+		log.Println("User", u.GetFullName(), "requested permission", p)
+		res := p.Has(u)
+		log.Println("  -> Res:", res)
+		return res
+	}
+}
 
 func (p Permission) Has(u *DiscordUser) bool {
 	return u.HasPermission(p)

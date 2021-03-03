@@ -11,6 +11,7 @@ require (
 	github.com/google/uuid v1.1.3
 	github.com/gorilla/mux v1.8.0
 	github.com/patrickmn/go-cache v2.1.0+incompatible
+	github.com/sergi/go-diff v1.1.0
 	go.mongodb.org/mongo-driver v1.4.4
 	golang.org/x/net v0.0.0-20201224014010-6772e930b67b // indirect
 	golang.org/x/oauth2 v0.0.0-20201208152858-08078c50e5b5
