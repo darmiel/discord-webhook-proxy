@@ -77,8 +77,12 @@
                                     </a>
 
                                     <div class="dropdown-menu bg-dark" aria-labelledby="dropdownMenuButton">
-                                        <a class="dropdown-item" href="/logout">🔐 Logout</a>
-                                        <a class="dropdown-item" href="/admin">🛠 Admin</a>
+                                        <a class="dropdown-item text-light" href="/logout">🔐 Logout</a>
+
+                                        <!-- Admin Pages -->
+                                        {{ if .User | PermissionAdminDashboardView }}
+                                            <a class="dropdown-item text-light" href="/admin">🛠 Admin</a>
+                                        {{ end }}
                                     </div>
                                 </li>
                             </ul>

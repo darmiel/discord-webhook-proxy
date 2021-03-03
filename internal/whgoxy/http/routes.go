@@ -32,5 +32,8 @@ func (ws *WebServer) getRoutes() []Route {
 		{"/cms/edit/{full_url}", ws.editCMSPageHandler},
 		{"/cms/history/{full_url}/{index}", ws.historyGetCMSPageHandler},
 		{"/cms/history/{full_url}", ws.historyeditCMSPageHandler},
+
+		// admin
+		{"/admin", ws.adminDashboardPageHandler},
 	}
 }

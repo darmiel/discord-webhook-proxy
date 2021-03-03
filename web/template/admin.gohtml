@@ -6,23 +6,68 @@
 {{ define "content" }}
     <link rel="stylesheet" href="/static/dashboard.css">
     <!-- Start Content -->
-    <section id="welcome">
         <div class="container py-5">
             <div class="row">
                 <div class="col-md-6" id="sectionLeft">
                     <h1 class="text-blurple text-right">Admin</h1>
                 </div>
+
+                {{ if .Error }}
+                    <span class="text-danger">⚠️ <strong>ERROR:</strong> {{ .Error }}</span>
+                    <a href="/dashboard">
+                        <button type="submit" class="btn btn-blurple ">
+                            Back to Dashboard
+                        </button>
+                    </a>
+                {{ end }}
             </div>
 
-            {{ if .Webhooks }}
-                {{ range .Webhooks }}
-                    {{ template "webhook_elem" . }}
-                    <br>
-                    <br>
-                {{ end }}
-            {{ else }}
-                No webhooks found :( <a href="/dashboard/create">Create!</a>
-            {{ end }}
+            <div class="row">
+                <h4 class="d-flex justify-content-between align-items-center mb-3">
+                    <span class="text-muted">CMS ({{ .Pages | CMSPageLen }} pages)</span>
+                </h4>
+
+                <a class="btn text-dark btn-blurple" href="/cms/create">Create New Page</a>
+                <table class="table table-dark">
+                    <!-- header -->
+                    <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">URL</th>
+                        <th scope="col">Title</th>
+                        <th scope="col">Creator</th>
+                        <th scope="col">Created At</th>
+                        <th scope="col"># Updates</th>
+                        <th scope="col">Markdown?</th>
+                        <th scope="col">Actions</th>
+                    </tr>
+                    </thead>
+
+                    <!-- body -->
+                    <tbody>
+                    {{ range $k, $v := .Pages }}
+                        {{ $creator := $v.Meta.CreatorUserID | GetUserByID }}
+                        <tr>
+                            <td>{{ $k }}</td>
+                            <td>{{ $v.URL }}</td>
+                            <td>{{ $v.Meta.Title }}</td>
+                            <td>
+                                <img src="{{ $creator | Avatar }}" alt="avatar" height="32px" width="32px">
+                                {{ $creator | FullName }}
+                            </td>
+                            <td>{{ $v.Meta.CreatedAt | DateFMT }}</td>
+                            <td>
+                                {{ $v.Updates | CMSUpdateLen }}
+                                (<a href="/cms/history/{{ $v.URL | en64 }}">History</a>)
+                            </td>
+                            <td>{{ if $v.Preferences.UseMarkdown }}✅{{end}}</td>
+                            <td>
+                                <a href="/cms/edit/{{ $v.URL | en64 }}">Edit</a>
+                            </td>
+                        </tr>
+                    {{ end }}
+                    </tbody>
+                </table>
+            </div>
         </div>
-    </section>
 {{ end }}

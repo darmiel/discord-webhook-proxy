@@ -73,6 +73,7 @@ var funcs = map[string]interface{}{
 	"HasPermissionCMSEditPage":     discord.PermissionCMSEditPage.Func(),
 	"PermissionCMSViewPageUpdates": discord.PermissionCMSViewPageUpdates.Func(),
 	"PermissionCMSViewPageAuthor":  discord.PermissionCMSViewPageAuthor.Func(),
+	"PermissionAdminDashboardView": discord.PermissionAdminDashboardView.Func(),
 
 	// PermissionCMSViewPageAuthor
 	"de64": func(in string) string {
@@ -87,6 +88,12 @@ var funcs = map[string]interface{}{
 	},
 	"DateFMT": func(t time.Time) string {
 		return t.Format("02.01.2006 15:04:05")
+	},
+	"CMSPageLen": func(v []*cms.CMSPage) int {
+		return len(v)
+	},
+	"CMSUpdateLen": func(v []cms.CMSPageUpdate) int {
+		return len(v)
 	},
 }
 

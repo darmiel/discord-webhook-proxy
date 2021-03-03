@@ -19,14 +19,18 @@ const (
 	PermissionCMSEditPage
 	PermissionCMSViewPageUpdates
 	PermissionCMSViewPageAuthor
+
+	// Admin
+	PermissionAdminDashboardView
 )
 
 // Permission Packs
 const (
-	PermissionPackWebhook  = PermissionWebhookCreate | PermissionWebhookEdit | PermissionWebhookDelete
-	PermissionPackBasic    = PermissionLogin | PermissionPackWebhook
-	PermissionPackCMSAdmin = PermissionCMSCreatePage | PermissionCMSEditPage | PermissionCMSViewPageUpdates | PermissionCMSViewPageAuthor
-	PermissionPackAdmin    = PermissionPackBasic | PermissionPackCMSAdmin
+	PermissionPackWebhook        = PermissionWebhookCreate | PermissionWebhookEdit | PermissionWebhookDelete
+	PermissionPackBasic          = PermissionLogin | PermissionPackWebhook
+	PermissionPackCMSAdmin       = PermissionCMSCreatePage | PermissionCMSEditPage | PermissionCMSViewPageUpdates | PermissionCMSViewPageAuthor
+	PermissionPackAdminDashboard = PermissionAdminDashboardView
+	PermissionPackAdmin          = PermissionPackBasic | PermissionPackCMSAdmin | PermissionAdminDashboardView
 )
 
 func (p Permission) Func() func(u *DiscordUser) bool {
