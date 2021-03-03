@@ -1,0 +1,28 @@
+<!-- Attr -->
+{{ define "customCSS" }}{{ end }}
+{{ define "title" }}whgoxy - Dashboard{{ end }}
+
+<!-- Content -->
+{{ define "content" }}
+    <link rel="stylesheet" href="/static/dashboard.css">
+    <!-- Start Content -->
+    <section id="welcome">
+        <div class="container py-5">
+            <div class="row">
+                <div class="col-md-6" id="sectionLeft">
+                    <h1 class="text-blurple text-right">Admin</h1>
+                </div>
+            </div>
+
+            {{ if .Webhooks }}
+                {{ range .Webhooks }}
+                    {{ template "webhook_elem" . }}
+                    <br>
+                    <br>
+                {{ end }}
+            {{ else }}
+                No webhooks found :( <a href="/dashboard/create">Create!</a>
+            {{ end }}
+        </div>
+    </section>
+{{ end }}

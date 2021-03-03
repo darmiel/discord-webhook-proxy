@@ -50,7 +50,7 @@ function showDiffWithCurrent(url, index) {
             Swal.fire({
                 position: 'center',
                 title: "Diff #" + index + " for " + url,
-                html: `<div style="text-align: left !important; color: #2C2F33 !important;">${text}</div>`
+                html: `<div style="text-align: left !important; color: #99AAB5 !important;">${text}</div>`
             });
         }
     });
