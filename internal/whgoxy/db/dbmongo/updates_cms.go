@@ -3,7 +3,6 @@ package dbmongo
 import (
 	"github.com/darmiel/whgoxy/internal/whgoxy/db"
 	"github.com/darmiel/whgoxy/internal/whgoxy/http/cms"
-	"github.com/patrickmn/go-cache"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -18,8 +17,8 @@ func (mdb *mongoDatabase) SaveCMSPage(page cms.CMSPage) (err error) {
 
 	// save to cache
 	if err == nil {
-		db.CMSCache.Set("page::"+page.URL, &page, cache.DefaultExpiration)
 		db.CMSCache.Delete("*::all")
+		db.CMSCache.Delete("page::" + page.URL)
 	}
 
 	return
@@ -32,6 +31,7 @@ func (mdb *mongoDatabase) DeleteCMSPage(page cms.CMSPage) (err error) {
 
 	// remove from cache
 	if err == nil {
+		db.CMSCache.Delete("*::all")
 		db.CMSCache.Delete("page::" + page.URL)
 	}
 

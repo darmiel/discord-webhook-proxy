@@ -56,6 +56,21 @@ func main() {
 	// }
 	// log.Println("Saving cmd page to database:", database.SaveCMSPage(page))
 	//
+	/*
+		pages, err := database.FindAllCMSPages()
+		if err != nil {
+			log.Fatalln("error finding page:", err)
+		} else {
+			pages, err = database.FindAllCMSPages()
+			for _, page := range pages {
+				log.Println("---")
+				log.Println(page.URL, "(", page.Meta.Title, ")")
+				log.Println("Orig Content:", page.Content)
+				log.Println("Md Content:", page.GetContent())
+			}
+		}
+		os.Exit(0)
+	*/
 
 	// load redis
 	client := dbredis.NewClient(conf.Redis)

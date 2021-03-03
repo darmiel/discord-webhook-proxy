@@ -38,12 +38,10 @@ func (p *CMSPage) CreateFilter() *bson.M {
 }
 
 var (
-	mdCache  = cache.New(60*time.Minute, 12*time.Minute)
-	mdParser = parser.NewWithExtensions(parser.CommonExtensions | parser.AutoHeadingIDs | parser.Footnotes)
+	mdCache = cache.New(60*time.Minute, 12*time.Minute)
 )
 
 func (p *CMSPage) GetContent() (content string) {
-	log.Println("Get content")
 	content = p.Content
 
 	if p.Preferences.UseMarkdown {
@@ -51,13 +49,22 @@ func (p *CMSPage) GetContent() (content string) {
 		// markdown
 		if c, found := mdCache.Get(p.Content); found {
 			content = c.(string)
-			log.Print("-> from cache")
+			log.Println("-> from cache")
 		} else {
 			b := []byte(content)
-			content = string(markdown.ToHTML(b, mdParser, nil))
+
+			mdParser := parser.NewWithExtensions(
+				parser.CommonExtensions | parser.AutoHeadingIDs |
+					parser.Footnotes | parser.FencedCode |
+					parser.DefinitionLists | parser.HardLineBreak,
+			)
+			html := markdown.ToHTML(b, mdParser, nil)
+
+			content = string(html)
 
 			// save to cache
 			mdCache.Set(p.Content, content, cache.DefaultExpiration)
+			log.Println("saved markdown to cache")
 		}
 	}
 

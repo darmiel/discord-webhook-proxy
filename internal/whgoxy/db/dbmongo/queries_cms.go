@@ -6,12 +6,21 @@ import (
 	"github.com/darmiel/whgoxy/internal/whgoxy/http/cms"
 	"github.com/patrickmn/go-cache"
 	"go.mongodb.org/mongo-driver/bson"
+	"log"
 )
 
 // FindCMSPage ...
 func (mdb *mongoDatabase) FindCMSPage(url string) (page *cms.CMSPage, err error) {
 	// check cache
 	if p, found := db.CMSCache.Get("page::" + url); found {
+		log.Println("CMS page found in cache:", p)
+		a, b := p.(*cms.CMSPage)
+		if b {
+			log.Println("succ:", a)
+		} else {
+			log.Println("err:", a)
+		}
+
 		return p.(*cms.CMSPage), nil
 	}
 
