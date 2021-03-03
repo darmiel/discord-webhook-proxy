@@ -17,13 +17,6 @@ func (ws *WebServer) editWebhookHandler(writer http.ResponseWriter, request *htt
 	uid := vars["uid"]
 
 	userID := user.DiscordUser.UserID
-
-	// TODO: Reimplement this later with admin role
-	//if u := request.URL.Query().Get("userID"); u != "" {
-	//	// TODO: Check admin
-	//	userID = u
-	//}
-
 	data := make(map[string]interface{})
 
 	// get webhook

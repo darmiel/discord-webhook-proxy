@@ -4,6 +4,8 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
+	"github.com/darmiel/whgoxy/internal/whgoxy/discord"
+	"github.com/darmiel/whgoxy/internal/whgoxy/http/auth"
 	"github.com/darmiel/whgoxy/internal/whgoxy/http/cms"
 	"github.com/gorilla/mux"
 	"github.com/sergi/go-diff/diffmatchpatch"
@@ -14,6 +16,17 @@ import (
 func (ws *WebServer) historyeditCMSPageHandler(writer http.ResponseWriter, request *http.Request) {
 	vars := mux.Vars(request)
 	b64 := vars["full_url"]
+
+	/// check perm
+	user, die := auth.GetUserOrDie(request, writer)
+	if die {
+		return
+	}
+	if !user.DiscordUser.HasPermission(discord.PermissionCMSViewHistory) {
+		_, _ = fmt.Fprintln(writer, "You don't have permissions to view the history of a cms page")
+		return
+	}
+	///
 
 	page := &cms.CMSPage{
 		URL:         "/not/found",
@@ -44,6 +57,18 @@ func (ws *WebServer) historyeditCMSPageHandler(writer http.ResponseWriter, reque
 }
 
 func (ws *WebServer) historyGetCMSPageHandler(writer http.ResponseWriter, request *http.Request) {
+
+	/// check perm
+	user, die := auth.GetUserOrDie(request, writer)
+	if die {
+		return
+	}
+	if !user.DiscordUser.HasPermission(discord.PermissionCMSViewHistory) {
+		_, _ = fmt.Fprintln(writer, "You don't have permissions to view the history of a cms page")
+		return
+	}
+	///
+
 	he := func(err error) {
 		writer.WriteHeader(500)
 		_, _ = fmt.Fprintln(writer, `ERROR: `+err.Error())

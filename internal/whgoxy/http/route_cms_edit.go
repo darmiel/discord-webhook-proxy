@@ -2,6 +2,9 @@ package http
 
 import (
 	"encoding/base64"
+	"fmt"
+	"github.com/darmiel/whgoxy/internal/whgoxy/discord"
+	"github.com/darmiel/whgoxy/internal/whgoxy/http/auth"
 	"github.com/darmiel/whgoxy/internal/whgoxy/http/cms"
 	"github.com/gorilla/mux"
 	"net/http"
@@ -10,6 +13,17 @@ import (
 func (ws *WebServer) editCMSPageHandler(writer http.ResponseWriter, request *http.Request) {
 	vars := mux.Vars(request)
 	b64 := vars["full_url"]
+
+	/// check perm
+	user, die := auth.GetUserOrDie(request, writer)
+	if die {
+		return
+	}
+	if !user.DiscordUser.HasPermission(discord.PermissionCMSEditPage) {
+		_, _ = fmt.Fprintln(writer, "You don't have permissions to edit a cms page")
+		return
+	}
+	///
 
 	page := &cms.CMSPage{
 		URL:         "/not/found",

@@ -19,6 +19,7 @@ const (
 	PermissionCMSEditPage
 	PermissionCMSViewPageUpdates
 	PermissionCMSViewPageAuthor
+	PermissionCMSViewHistory
 
 	// Admin
 	PermissionAdminDashboardView
@@ -28,7 +29,7 @@ const (
 const (
 	PermissionPackWebhook        = PermissionWebhookCreate | PermissionWebhookEdit | PermissionWebhookDelete
 	PermissionPackBasic          = PermissionLogin | PermissionPackWebhook
-	PermissionPackCMSAdmin       = PermissionCMSCreatePage | PermissionCMSEditPage | PermissionCMSViewPageUpdates | PermissionCMSViewPageAuthor
+	PermissionPackCMSAdmin       = PermissionCMSCreatePage | PermissionCMSEditPage | PermissionCMSViewPageUpdates | PermissionCMSViewPageAuthor | PermissionCMSViewHistory
 	PermissionPackAdminDashboard = PermissionAdminDashboardView
 	PermissionPackAdmin          = PermissionPackBasic | PermissionPackCMSAdmin | PermissionAdminDashboardView
 )
