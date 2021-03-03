@@ -56,6 +56,10 @@ type Database interface {
 	// FindWebhooks returns all CMD-Pages
 	FindAllCMSPages() (pages []*cms.CMSPage, err error)
 
+	FindAllLinks() (links []*cms.CMSLink, err error)
+	SaveCMSLink(link *cms.CMSLink) (err error)
+	DeleteCMSLink(link *cms.CMSLink) (err error)
+
 	////
 
 	Disconnect() (err error)

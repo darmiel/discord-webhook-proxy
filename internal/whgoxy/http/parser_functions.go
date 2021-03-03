@@ -95,6 +95,9 @@ var funcs = map[string]interface{}{
 	"CMSUpdateLen": func(v []cms.CMSPageUpdate) int {
 		return len(v)
 	},
+	"CMSLinkLen": func(v []*cms.CMSLink) int {
+		return len(v)
+	},
 }
 
 func fmtDuration(d time.Duration) string {

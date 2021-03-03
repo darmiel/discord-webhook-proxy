@@ -75,3 +75,34 @@ func (mdb *mongoDatabase) FindAllCMSPages() (pages []*cms.CMSPage, err error) {
 
 	return pages, nil
 }
+
+func (mdb *mongoDatabase) FindAllLinks() (links []*cms.CMSLink, err error) {
+	// check cache
+	if p, found := db.CMSCache.Get("link::*::all"); found {
+		return p.([]*cms.CMSLink), nil
+	}
+
+	filter := bson.M{}
+	res, err := mdb.linkCollection().Find(mdb.context, filter)
+	if err != nil {
+		return nil, err
+	}
+
+	for res.Next(mdb.context) {
+		var link *cms.CMSLink
+		if err := res.Decode(&link); err != nil {
+			return nil, err
+		}
+
+		//goland:noinspection GoNilness
+		if link == nil {
+			return nil, errors.New("a cms link was nil")
+		}
+
+		links = append(links, link)
+	}
+
+	// update cache
+	db.CMSCache.Set("links::*::all", links, cache.DefaultExpiration)
+	return links, nil
+}

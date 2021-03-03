@@ -5,6 +5,7 @@ import (
 	"github.com/darmiel/whgoxy/internal/whgoxy/config"
 	"github.com/darmiel/whgoxy/internal/whgoxy/db"
 	"github.com/darmiel/whgoxy/internal/whgoxy/http/auth"
+	"github.com/darmiel/whgoxy/internal/whgoxy/http/cms"
 	"github.com/gorilla/mux"
 	"html/template"
 	"io/ioutil"
@@ -105,6 +106,12 @@ func (ws *WebServer) Exec(name string, r *http.Request, w http.ResponseWriter, d
 	//// Global data
 	// CurrentURL
 	data["CurrentURL"] = r.URL.String()
+	// Links
+	links, _ := ws.Database.FindAllLinks()
+	if links == nil {
+		links = make([]*cms.CMSLink, 0)
+	}
+	data["CMSLinks"] = links
 
 	// User
 	if user, ok := auth.GetUser(r); ok && user != nil {

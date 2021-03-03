@@ -36,6 +36,17 @@
                                 <img src="/static/img/GitHub-Mark-Light-32px.png" height="24px" alt="GitHub">
                             </a>
                         </li>
+
+                        {{ if .CMSLinks }}
+                            {{ range .CMSLinks }}
+                                <!-- Custom Link -->
+                                <li class="nav-item">
+                                    <a class="nav-link text-white" href="{{ .Href }}">
+                                        {{ .Name }}
+                                    </a>
+                                </li>
+                            {{ end }}
+                        {{ end }}
                     </ul>
                 </div>
 
@@ -68,7 +79,7 @@
 
                                     <div class="dropdown-menu bg-dark" aria-labelledby="dropdownMenuButton">
                                         <a class="dropdown-item text-light" href="/dashboard">📊 Dashboard</a>
-                                        <a class="dropdown-item text-light" href="/dashboard/create">  👉 Create</a>
+                                        <a class="dropdown-item text-light" href="/dashboard/create"> 👉 Create</a>
 
                                         <!-- Admin Pages -->
                                         {{ if .User | PermissionAdminDashboardView }}

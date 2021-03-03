@@ -8,6 +8,7 @@ import (
 	"github.com/darmiel/whgoxy/internal/whgoxy/db/dbredis"
 	"github.com/darmiel/whgoxy/internal/whgoxy/http"
 	"github.com/darmiel/whgoxy/internal/whgoxy/http/auth"
+	"github.com/darmiel/whgoxy/internal/whgoxy/http/cms"
 	"log"
 	"os"
 	"os/signal"
@@ -32,45 +33,10 @@ func main() {
 	}()
 	db.GlobalDatabase = database
 
-	///// TODO: Remove this
-	// page := cms.CMSPage{
-	// 	URL: "/test",
-	// 	Meta: cms.CMSPageMeta{
-	// 		Title:         "Test-Page",
-	// 		CreatorUserID: "710491120903127080",
-	// 		CreatedAt:     time.Now(),
-	// 	},
-	// 	Updates: []cms.CMSPageUpdate{
-	// 		{
-	// 			UpdatedAt:     time.Now(),
-	// 			UpdaterUserID: "431537207606640651",
-	// 		},
-	// 	},
-	// 	Preferences: cms.CMSPagePreferences{
-	// 		AuthorVisible:    true,
-	// 		Dynamic:          false,
-	// 		URLCaseSensitive: true,
-	// 		UseMarkdown:      true,
-	// 	},
-	// 	Content: "Hallo, das ist ein Test!",
-	// }
-	// log.Println("Saving cmd page to database:", database.SaveCMSPage(page))
-	//
-	/*
-		pages, err := database.FindAllCMSPages()
-		if err != nil {
-			log.Fatalln("error finding page:", err)
-		} else {
-			pages, err = database.FindAllCMSPages()
-			for _, page := range pages {
-				log.Println("---")
-				log.Println(page.URL, "(", page.Meta.Title, ")")
-				log.Println("Orig Content:", page.Content)
-				log.Println("Md Content:", page.GetContent())
-			}
-		}
-		os.Exit(0)
-	*/
+	database.SaveCMSLink(&cms.CMSLink{
+		Name: "Test",
+		Href: "/test",
+	})
 
 	// load redis
 	client := dbredis.NewClient(conf.Redis)

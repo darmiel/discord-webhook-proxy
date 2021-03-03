@@ -37,3 +37,30 @@ func (mdb *mongoDatabase) DeleteCMSPage(page cms.CMSPage) (err error) {
 
 	return
 }
+
+func (mdb *mongoDatabase) SaveCMSLink(link *cms.CMSLink) (err error) {
+	filter := bson.M{
+		"name": link.Name,
+	}
+	update := bson.M{
+		"$set": link,
+	}
+	_, err = mdb.linkCollection().UpdateOne(mdb.context, filter, update, options.Update().SetUpsert(true))
+	// remove from cache
+	if err == nil {
+		db.CMSCache.Delete("link::*::all")
+	}
+	return
+}
+
+func (mdb *mongoDatabase) DeleteCMSLink(link *cms.CMSLink) (err error) {
+	filter := bson.M{
+		"name": link.Name,
+	}
+	_, err = mdb.linkCollection().DeleteOne(mdb.context, filter)
+	// remove from cache
+	if err == nil {
+		db.CMSCache.Delete("link::*::all")
+	}
+	return
+}
