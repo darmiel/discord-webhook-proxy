@@ -1,0 +1,111 @@
+<!-- Attr -->
+{{ define "customCSS" }}{{ end }}
+{{ define "title" }}whgoxy - {{ .CMS.Meta.Title }}{{ end }}
+
+<!-- Content -->
+{{ define "content" }}
+    <section id="content">
+        <div class="container py-5">
+            <div class="row">
+                <div class="col-md-6" id="sectionLeft">
+                    <h1 class="text-blurple text-right">{{ .CMS.Meta.Title }}</h1>
+                </div>
+
+                <div class="col-md-6 text-right" style="text-align: right">
+
+                    <!-- Edit Button -->
+                    {{ if .User }}
+                        {{ if .User | HasPermissionCMSEditPage }}
+                            <div class="edit-button">
+                                <a href="/cms/edit/{{ .CMS.URL | en64 }}" onclick="updatePage()">Edit Page</a>
+                            </div>
+                        {{ end }}
+                    {{ end }}
+
+                    <!-- Start Author -->
+                    {{ $authorVisible := false }}
+                    {{ if .CMS.Preferences.AuthorVisible }}
+                        {{ $authorVisible = true }}
+                    {{ else }}
+                        {{ if .User }}
+                            {{ if .User | PermissionCMSViewPageUpdates }}
+                                {{ $authorVisible = true }}
+                            {{ end }}
+                        {{ end }}
+                    {{ end }}
+                    {{ if $authorVisible }}
+                        {{ $creator := .CMS.Meta.CreatorUserID | GetUserByID }}
+                        {{ if $creator }}
+                            <div class="author float-right">
+                            <span class="text-blurple float-right">
+                            by <strong>{{ $creator | FullName }}</strong>
+                            <img
+                                    src="{{ $creator | Avatar }}"
+                                    height="32px"
+                                    width="32px"
+                                    alt="avatar"
+                                    style="border-radius: 50%;"
+                            >
+                            </span>
+                            </div>
+                        {{ end }}
+                    {{ end }}
+                    <!-- End Author -->
+
+                    <!-- Start Updater -->
+                    {{ $updatesVisible := false }}
+                    {{ if .CMS.Preferences.UpdatersVisible }}
+                        {{ $updatesVisible = true }}
+                    {{ else }}
+                        {{ if .User }}
+                            {{ if .User | PermissionCMSViewPageAuthor }}
+                                {{ $updatesVisible = true }}
+                            {{ end }}
+                        {{ end }}
+                    {{ end }}
+                    {{ if $updatesVisible }}
+                        {{ $update := .CMS | CMSGetUpdateInfo }}
+                        {{ if $update }}
+                            <div class="update float-right">
+                                <span class="text-light">
+                                    Last update: <strong>{{ $update.FormattedTime }}</strong>
+                                </span>
+
+                                {{ $updater := $update.UpdaterID | GetUserByID }}
+                                {{ if $updater }}
+                                    <br>
+                                    <span class="text-muted">
+                                        by <strong>{{ $updater | FullName }}</strong>
+                                        <img
+                                                src="{{ $updater | Avatar }}"
+                                                height="24px"
+                                                width="24px"
+                                                alt="avatar"
+                                                style="border-radius: 50%;"
+                                        >
+                                    </span>
+                                {{ end }}
+                            </div>
+                        {{ end }}
+                    {{ end }}
+                    <!-- End Updater -->
+                </div>
+            </div>
+            <div class="row text-light" id="raw_content">
+                {{ .CMS | GetContent | Unescape }}
+            </div>
+        </div>
+    </section>
+
+    <!-- Used to unescape the content -->
+    <script>
+        function htmlDecode(input) {
+            const elem = document.createElement('div');
+            elem.innerHTML = input;
+            return elem.childNodes.length === 0 ? "" : elem.childNodes[0].nodeValue;
+        }
+
+        const cnt = document.getElementById("raw_content");
+        cnt.innerHTML = htmlDecode(cnt.innerHTML);
+    </script>
+{{ end }}

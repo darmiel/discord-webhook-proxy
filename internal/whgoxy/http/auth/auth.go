@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"fmt"
 	"github.com/darmiel/whgoxy/internal/whgoxy/config"
 	"github.com/darmiel/whgoxy/internal/whgoxy/db"
 	"github.com/darmiel/whgoxy/internal/whgoxy/discord"
@@ -128,6 +129,7 @@ func GetUser(r *http.Request) (u *User, ok bool) {
 func GetUserOrDie(r *http.Request, w http.ResponseWriter) (u *User, die bool) {
 	u, ok := GetUser(r)
 	if !ok {
+		w.WriteHeader(401)
 		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 		return nil, true
 	}
@@ -136,7 +138,7 @@ func GetUserOrDie(r *http.Request, w http.ResponseWriter) (u *User, die bool) {
 
 ///
 
-func LoginUser(w http.ResponseWriter, u *User) {
+func LoginUser(w http.ResponseWriter, u *User) (success bool) {
 	dgu := u.DiscordUser
 	log.Println("👋 Logging in ", dgu.GetFullName(), "("+dgu.UserID+")", "...")
 
@@ -145,6 +147,12 @@ func LoginUser(w http.ResponseWriter, u *User) {
 		log.Printf("   └ User found in database. Using attributes: %+v\n", dbu.Attributes)
 		// update attributes from database
 		dgu.Attributes = dbu.Attributes
+	}
+
+	// check if user has permissions to login
+	if !dgu.HasPermission(discord.PermissionLogin) {
+		_, _ = fmt.Fprintln(w, "You don't have permissions to log in.")
+		return false
 	}
 
 	// repair discord user
@@ -173,6 +181,8 @@ func LoginUser(w http.ResponseWriter, u *User) {
 	if err := database.SaveDiscordUser(dgu); err != nil {
 		log.Println("🤬 Error saving", u.DiscordUser.GetFullName(), ":", err)
 	}
+
+	return true
 }
 
 func LogoutUser(w http.ResponseWriter, u *User) {

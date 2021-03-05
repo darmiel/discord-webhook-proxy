@@ -35,6 +35,12 @@ func killReq(writer http.ResponseWriter, data interface{}) {
 		if t.Succes {
 			header = 200
 		}
+		break
+	case string:
+		data = DeleteWebhookResponse{
+			Succes: false,
+			Error:  t,
+		}
 	}
 
 	// write (error) header
@@ -53,6 +59,11 @@ func (ws *WebServer) deleteWebhookRouteHandler(w http.ResponseWriter, r *http.Re
 	// check if user is logged in
 	user, die := auth.GetUserOrDie(r, w)
 	if die {
+		return
+	}
+
+	if !user.DiscordUser.HasPermission(discord.PermissionWebhookDelete) {
+		killReq(w, "You don't have permissions to delete a webhook.")
 		return
 	}
 

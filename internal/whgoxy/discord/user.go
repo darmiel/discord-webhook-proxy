@@ -28,6 +28,10 @@ func (u *DiscordUser) GetFullName() string {
 
 func (u *DiscordUser) GetAvatarUrl() (url string) {
 	url = fmt.Sprintf("https://cdn.discordapp.com/avatars/%s/%s.png", u.UserID, u.Avatar)
+	// system user?
+	if u.Discriminator == "0000" {
+		url = "/static/img/system.png"
+	}
 	return url
 }
 

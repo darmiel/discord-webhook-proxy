@@ -12,6 +12,8 @@ import (
 
 const WebhookCollectionName string = "whgoxy-webhooks"
 const UserCollectionName string = "whgoxy-users"
+const CMSCollectionName string = "whgoxy-cms"
+const LinkCollectionName string = "whgoxy-cms-links"
 
 /// Mongo Functions
 
@@ -28,6 +30,14 @@ func (mdb *mongoDatabase) webhookCollection() (collection *mongo.Collection) {
 
 func (mdb *mongoDatabase) userCollection() (collection *mongo.Collection) {
 	return mdb.client.Database(mdb.database).Collection(UserCollectionName)
+}
+
+func (mdb *mongoDatabase) cmsCollection() (collection *mongo.Collection) {
+	return mdb.client.Database(mdb.database).Collection(CMSCollectionName)
+}
+
+func (mdb *mongoDatabase) linkCollection() (collection *mongo.Collection) {
+	return mdb.client.Database(mdb.database).Collection(LinkCollectionName)
 }
 
 // Disconnect disconnects the mongo client and should be run at the end of the program

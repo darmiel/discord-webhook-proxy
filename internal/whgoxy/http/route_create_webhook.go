@@ -26,10 +26,24 @@ type CreateWebhookResponse struct {
 	SentJson string           `json:"sent_json"`
 }
 
+func (ws *WebServer) createWebhookFrontendRouteHandler(writer http.ResponseWriter, request *http.Request) {
+	// ws.MustExec("create", writer, request, nil)
+	ws.MustExec("vieweditcreate", writer, request, map[string]interface{}{
+		"ModeCreate": true,
+	})
+}
+
 func (ws *WebServer) createWebhookRouteHandler(w http.ResponseWriter, r *http.Request) {
 	// check if user is logged in
 	user, die := auth.GetUserOrDie(r, w)
 	if die {
+		return
+	}
+
+	// check permissions
+	if !user.DiscordUser.HasPermission(discord.PermissionWebhookCreate) {
+		w.WriteHeader(403)
+		_, _ = fmt.Fprint(w, "Sorry, you don't have permissions to create a webhook.")
 		return
 	}
 
@@ -44,7 +58,7 @@ func (ws *WebServer) createWebhookRouteHandler(w http.ResponseWriter, r *http.Re
 	// check limit
 	if count >= user.DiscordUser.Attributes.MaxWebhookCount {
 		w.WriteHeader(400)
-		_, _ = fmt.Fprint(w, "Sorry, you can't create more webhooks. Please ask to increase the limit on the Discord server.")
+		_, _ = fmt.Fprint(w, "Sorry, you can't create more webhooks.")
 		return
 	}
 
@@ -102,6 +116,14 @@ func (ws *WebServer) createWebhookRouteHandler(w http.ResponseWriter, r *http.Re
 
 			// check if forced request
 			if data.Force {
+
+				// check permission
+				if !user.DiscordUser.HasPermission(discord.PermissionWebhookEdit) {
+					w.WriteHeader(403)
+					_, _ = fmt.Fprintln(w, "You don't have permissions to edit a webhook.")
+					return
+				}
+
 				webhook = wh
 
 				// update webhook
@@ -161,7 +183,7 @@ func (ws *WebServer) createWebhookRouteHandler(w http.ResponseWriter, r *http.Re
 
 	if err := db.SaveWebhook(webhook); err != nil {
 		w.WriteHeader(400)
-		_, _ = fmt.Fprintf(w, "Webhook is vaid, but could not be saved due to a database error: %s", err.Error())
+		_, _ = fmt.Fprintf(w, "Webhook is valid, but could not be saved due to a database error: %s", err.Error())
 		return
 	}
 

@@ -8,6 +8,7 @@ import (
 	"github.com/darmiel/whgoxy/internal/whgoxy/db/dbredis"
 	"github.com/darmiel/whgoxy/internal/whgoxy/http"
 	"github.com/darmiel/whgoxy/internal/whgoxy/http/auth"
+	"github.com/darmiel/whgoxy/internal/whgoxy/http/cms"
 	"log"
 	"os"
 	"os/signal"
@@ -31,6 +32,11 @@ func main() {
 		}
 	}()
 	db.GlobalDatabase = database
+
+	database.SaveCMSLink(&cms.CMSLink{
+		Name: "Test",
+		Href: "/test",
+	})
 
 	// load redis
 	client := dbredis.NewClient(conf.Redis)

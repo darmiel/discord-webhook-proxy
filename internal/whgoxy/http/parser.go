@@ -2,14 +2,11 @@ package http
 
 import (
 	"fmt"
-	"github.com/darmiel/whgoxy/internal/whgoxy/db"
-	"github.com/darmiel/whgoxy/internal/whgoxy/discord"
 	"html/template"
 	"log"
 	"os"
 	"path/filepath"
 	"strings"
-	"time"
 )
 
 const rootTmpl = `{{ define "root" }} {{ template "base" . }} {{ end }}`
@@ -19,41 +16,6 @@ type TemplateParser struct {
 
 func NewTemplateParser() (parser *TemplateParser) {
 	return &TemplateParser{}
-}
-
-func fmtDuration(d time.Duration) string {
-	d = d.Round(time.Minute)
-	h := d / time.Hour
-	d -= h * time.Hour
-	m := d / time.Minute
-	return fmt.Sprintf("%02d:%02d", h, m)
-}
-
-var funcs = map[string]interface{}{
-	"Avatar": func(u *discord.DiscordUser) string {
-		return u.GetAvatarUrl()
-	},
-	"WebhookCount": func(u *discord.DiscordUser) uint {
-		count, err := db.GlobalDatabase.CountWebhooksForUser(u.UserID)
-		if err != nil {
-			log.Println("🐛 Error counting webhooks:", err)
-			return 0
-		}
-		return count
-	},
-	"GetStats": func(w *discord.Webhook) *discord.WebhookStats {
-		stats := w.GetStats()
-		return stats
-	},
-	"Escape": func(s string) string {
-		return template.HTMLEscaper(s)
-	},
-	"StrAgo": func(sec int64) string {
-		if sec == 0 {
-			return "/"
-		}
-		return fmtDuration(time.Since(time.Unix(sec, 0)))
-	},
 }
 
 func (parser *TemplateParser) ParseTemplate(name string) (tpl *template.Template, err error) {

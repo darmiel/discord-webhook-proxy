@@ -6,7 +6,6 @@ import (
 	"github.com/patrickmn/go-cache"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"log"
 )
 
 /// Webhook Update Functions
@@ -47,17 +46,5 @@ func (mdb *mongoDatabase) DeleteWebhook(uid string, userID string) (err error) {
 		db.WebhookCache.Delete(db.GetCacheKeyManual(userID, uid))
 	}
 
-	return
-}
-
-func (mdb *mongoDatabase) SaveDiscordUser(dcu *discord.DiscordUser) (err error) {
-	log.Println("💾 Saving user", dcu.GetFullName(), "...")
-
-	filter := bson.M{"user_id": dcu.UserID}
-	update := bson.M{"$set": dcu}
-
-	updateOpts := options.Update().SetUpsert(true)
-
-	_, err = mdb.userCollection().UpdateOne(mdb.context, filter, update, updateOpts)
 	return
 }
