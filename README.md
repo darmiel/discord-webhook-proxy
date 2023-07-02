@@ -3,8 +3,6 @@
 
 # Discord Webhook Proxy<img src="./web/static/img/discord.png" align="right" width=200 height=200>
 
-Demo at [whgoxy.d2a.io](https://whgoxy.d2a.io) *(no uptime gurantee)*
-
 ---
 
 ## ToC
